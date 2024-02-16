@@ -1,0 +1,32 @@
+import { Button, VerticalBox } from "std-widgets.slint";
+
+component ImageViewer inherits Rectangle{
+    in property <image> image;
+            
+            width: 512px;
+            height: 512px;
+            background: #202126;
+            border-radius: 7px;
+        
+            Image {
+                source: image;
+                image-fit: contain;
+                width: parent.width * 0.95;
+                height: parent.height * 0.95;
+            }
+}
+
+export component AppWindow inherits Window {
+    callback openFileSelector;
+    in property <image> image;
+
+    VerticalBox {
+        Button {
+            text: "Open File Selector";
+            clicked => {root.openFileSelector();}
+        }
+        ImageViewer {
+            image: image;
+        }
+    }
+}
