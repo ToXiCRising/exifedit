@@ -1,4 +1,4 @@
-import { Button, VerticalBox } from "std-widgets.slint";
+import { Button, VerticalBox, HorizontalBox, StandardListView } from "std-widgets.slint";
 
 component ImageViewer inherits Rectangle{
     in property <image> image;
@@ -16,17 +16,58 @@ component ImageViewer inherits Rectangle{
             }
 }
 
+component ImageTile inherits Rectangle {
+    in property <bool> selected;
+    in property <image> preview_smol;
+    in property <string> image_name;
+    
+    background: #202126;
+    border-radius: 7px;
+    height: 128px;
+
+    VerticalBox {
+        
+        Image {
+            source: preview_smol;
+            image-fit: contain;
+            width: parent.width * 0.95;
+            height: parent.height * 0.95;
+        }
+        Text {
+            horizontal-alignment: center;
+            text: image_name;
+        }
+    }
+    
+}
+
 export component AppWindow inherits Window {
     callback openFileSelector;
     in property <image> image;
+    in property <[string]> image_names;
 
-    VerticalBox {
-        Button {
-            text: "Open File Selector";
-            clicked => {root.openFileSelector();}
+    HorizontalBox {
+        VerticalBox {
+            width: 256px;
+            Button {
+                height: 32px;
+                
+                text: "Open File Selector";
+                clicked => {root.openFileSelector();}
+            }
+            VerticalBox {
+                for img_name in image_names: ImageTile {
+                    image_name: img_name;
+                }
+            }
         }
-        ImageViewer {
-            image: image;
+
+        VerticalBox {   
+            padding-bottom: 20px;
+            ImageViewer {
+                image: image;
+            }
         }
     }
+    
 }
