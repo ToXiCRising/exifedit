@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct DataHandler {
     pub image_paths: Vec<PathBuf>,
     pub curretly_selected: usize,

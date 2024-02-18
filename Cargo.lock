@@ -1247,6 +1247,7 @@ dependencies = [
 name = "exifedit"
 version = "0.1.0"
 dependencies = [
+ "lazy_static",
  "native-dialog",
  "slint",
  "slint-build",

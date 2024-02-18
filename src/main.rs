@@ -5,23 +5,28 @@ mod type_conversion;
 mod data_handler;
 
 use std::path::PathBuf;
+use lazy_static::lazy_static;
+use std::sync::Mutex;
 use data_handler::DataHandler;
 use slint::Image;
 
-fn main() -> Result<(), slint::PlatformError> {
-    let ui = AppWindow::new()?;
-
-    let mut dh: DataHandler = DataHandler{
+lazy_static! {
+    static ref DH: Mutex<DataHandler> = Mutex::new(DataHandler{
         curretly_selected: 0,
         image_paths: vec![],
-    };
+    });
+}
+
+fn main() -> Result<(), slint::PlatformError> {
+    let ui = AppWindow::new()?;
 
     ui.global::<Logic>().on_clickedImageTile({
         let ui_handle = ui.as_weak();
         move |id|{
             let ui = ui_handle.unwrap();
-            dh.set_currently_selected(id as usize);
-            //update(ui, &dh_handle);
+
+            DH.lock().unwrap().set_currently_selected(id as usize);
+            update(ui, &DH.lock().unwrap());
         }
     });
 
@@ -30,9 +35,8 @@ fn main() -> Result<(), slint::PlatformError> {
         move || {
             let ui = ui_handle.unwrap();
 
-            dh.add_image_paths(&mut handling_images::open_file_selector());
-
-            update(ui, &dh);     
+            DH.lock().unwrap().add_image_paths(&mut handling_images::open_file_selector());
+            update(ui, &DH.lock().unwrap());     
         }
     });
 
