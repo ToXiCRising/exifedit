@@ -1,4 +1,4 @@
-import { Button, VerticalBox, HorizontalBox, StandardListView } from "std-widgets.slint";
+import { Button, VerticalBox, HorizontalBox, StandardListView, ScrollView } from "std-widgets.slint";
 
 component ImageViewer inherits Rectangle{
     in property <image> image;
@@ -17,34 +17,50 @@ component ImageViewer inherits Rectangle{
 }
 
 component ImageTile inherits Rectangle {
+    callback onClickedImageTile;
+
     in property <bool> selected;
     in property <image> preview_smol;
     in property <string> image_name;
+    in-out property <int> id;
     
     background: #202126;
     border-radius: 7px;
     height: 128px;
 
-    VerticalBox {
-        
-        Image {
-            source: preview_smol;
-            image-fit: contain;
-            width: parent.width * 0.95;
-            height: parent.height * 0.95;
-        }
-        Text {
-            horizontal-alignment: center;
-            text: image_name;
-        }
-    }
+    TouchArea {
+        clicked => {Logic.clickedImageTile(id)}
+        VerticalLayout {
+            Image {
+                source: preview_smol;
+                image-fit: contain;
+                width: parent.width * 0.95;
+                height: parent.height * 0.95;
+            }
+            Rectangle {
+                width: parent.width;
+                height: 16px;
+                border-radius: 7px;
+                background: #4c4d57;
     
+                Text {
+                    horizontal-alignment: center;
+                    text: image_name;
+                }
+            }   
+        }
+    }   
 }
 
 export component AppWindow inherits Window {
     callback openFileSelector;
-    in property <image> image;
-    in property <[string]> image_names;
+
+    in property <image> preview_image;
+
+    in property <[string]> carousel_image_names;
+    in property <[image]> carousel_images;
+    in property <int> carousel_viewport_height;
+    in property <int> carousel_cur_selected;
 
     HorizontalBox {
         VerticalBox {
@@ -55,19 +71,28 @@ export component AppWindow inherits Window {
                 text: "Open File Selector";
                 clicked => {root.openFileSelector();}
             }
-            VerticalBox {
-                for img_name in image_names: ImageTile {
+            
+            ScrollView {
+                viewport-width: parent.width * 0.9;
+                viewport-height: carousel_viewport_height * 1px;
+                for img_name[i] in carousel_image_names: ImageTile {
                     image_name: img_name;
+                    preview_smol: carousel_images[i];
+                    id: i;
+                    y: 150px * i;
                 }
             }
         }
 
         VerticalBox {   
-            padding-bottom: 20px;
             ImageViewer {
-                image: image;
+                image: preview_image;
             }
         }
     }
     
+}
+
+export global Logic {
+    pure callback clickedImageTile(int);
 }
