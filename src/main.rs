@@ -27,7 +27,7 @@ fn main() -> Result<(), slint::PlatformError> {
 
             println!("clicked tile {id}");
             DH.lock().unwrap().set_currently_selected(id as usize);
-            update(ui);
+            update(ui, false);
         }
     });
 
@@ -37,26 +37,28 @@ fn main() -> Result<(), slint::PlatformError> {
             let ui = ui_handle.unwrap();
 
             DH.lock().unwrap().add_image_paths(&mut handling_images::open_file_selector());
-            update(ui);     
+            update(ui, true);     
         }
     });
 
     ui.run()
 }
 
-fn update(ui: AppWindow){
+fn update(ui: AppWindow, update_carousel: bool){
     let dh_handle = DH.lock().unwrap();
     //Updates image carousel
-    ui.set_carousel_image_names(
-        type_conversion::paths_to_model(dh_handle.image_paths.to_vec())    //dh.image_paths.to_vec()
-    );
-
-    ui.set_carousel_images(
-        type_conversion::images_to_model(dh_handle.image_paths.to_vec())
-    );
-
-    ui.set_carousel_viewport_height(dh_handle.image_paths.len() as i32 * 150);
-    ui.set_carousel_cur_selected(dh_handle.curretly_selected as i32);
+    if update_carousel {
+        ui.set_carousel_image_names(
+            type_conversion::paths_to_model(dh_handle.image_paths.to_vec())    //dh.image_paths.to_vec()
+        );
+    
+        ui.set_carousel_images(
+            type_conversion::images_to_model(dh_handle.image_paths.to_vec())
+        );
+    
+        ui.set_carousel_viewport_height(dh_handle.image_paths.len() as i32 * 150);
+        ui.set_carousel_cur_selected(dh_handle.curretly_selected as i32);
+    }
 
     //Updates main Preview
     let cur_path = &dh_handle.image_paths[dh_handle.curretly_selected];
