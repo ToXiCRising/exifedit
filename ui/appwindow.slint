@@ -1,4 +1,4 @@
-import { Button, VerticalBox, HorizontalBox, StandardListView, ScrollView } from "std-widgets.slint";
+import { Button, VerticalBox, HorizontalBox, StandardListView, ScrollView, LineEdit } from "std-widgets.slint";
 
 component ImageViewer inherits Rectangle{
     in property <image> image;
@@ -52,8 +52,35 @@ component ImageTile inherits Rectangle {
     }   
 }
 
+component ExifTile inherits Rectangle {
+    in property <string> field_name;
+    in property <string> preview_text;
+    Rectangle {
+        width: parent.width;
+        height: 80px;
+        border-radius: 7px;
+        background: #202126;    
+
+        VerticalLayout {
+            padding-top: 12px;
+            Text {
+                font-weight: 700;
+                font-size: 16px;
+                horizontal-alignment: center;
+                text: field_name;
+            }
+            LineEdit {
+                horizontal-alignment: center;
+                placeholder-text: preview_text;
+                font-size: 16px;
+            }
+        } 
+    }
+}
+
 export component AppWindow inherits Window {
     callback openFileSelector;
+    callback writeExifData;
 
     in property <image> preview_image;
 
@@ -88,6 +115,48 @@ export component AppWindow inherits Window {
             ImageViewer {
                 image: preview_image;
             }
+        }
+
+        VerticalBox {
+            width: 256px;
+            Button {
+                height: 32px;
+                
+                text: "Write EXIF Data";
+                clicked => {root.writeExifData();}
+            }
+
+            ScrollView {
+                viewport-width: parent.width * 0.9;
+                viewport-height: 512px;
+                property <int> spacing: 95;
+                ExifTile {
+                    field_name: "Camera";
+                    preview_text: "Mamiya RB67";
+                    y: (-210 + 0 * spacing)* 1px;
+                }
+                ExifTile {
+                    field_name: "Lens";
+                    preview_text: "Mamiya Sekor C 127mm 3.8";
+                    y: (-210 + 1 * spacing)* 1px;
+                }
+                ExifTile {
+                    field_name: "ISO/ASA";
+                    preview_text: "200";
+                    y: (-210 + 2 * spacing)* 1px;
+                }
+                ExifTile {
+                    field_name: "Aperture";
+                    preview_text: "3.8";
+                    y: (-210 + 3 * spacing)* 1px;
+                }
+                ExifTile {
+                    field_name: "Shutter Speed";
+                    preview_text: "1/60";
+                    y: (-210 + 4 * spacing)* 1px;
+                }
+            }
+            
         }
     }
     
