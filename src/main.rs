@@ -25,8 +25,9 @@ fn main() -> Result<(), slint::PlatformError> {
         move |id|{
             let ui = ui_handle.unwrap();
 
+            println!("clicked tile {id}");
             DH.lock().unwrap().set_currently_selected(id as usize);
-            update(ui, &DH.lock().unwrap());
+            update(ui);
         }
     });
 
@@ -36,28 +37,29 @@ fn main() -> Result<(), slint::PlatformError> {
             let ui = ui_handle.unwrap();
 
             DH.lock().unwrap().add_image_paths(&mut handling_images::open_file_selector());
-            update(ui, &DH.lock().unwrap());     
+            update(ui);     
         }
     });
 
     ui.run()
 }
 
-fn update(ui: AppWindow, dh: &DataHandler){
+fn update(ui: AppWindow){
+    let dh_handle = DH.lock().unwrap();
     //Updates image carousel
     ui.set_carousel_image_names(
-        type_conversion::paths_to_model(dh.image_paths.to_vec())   
+        type_conversion::paths_to_model(dh_handle.image_paths.to_vec())    //dh.image_paths.to_vec()
     );
 
     ui.set_carousel_images(
-        type_conversion::images_to_model(dh.image_paths.to_vec())
+        type_conversion::images_to_model(dh_handle.image_paths.to_vec())
     );
 
-    ui.set_carousel_viewport_height(dh.image_paths.len() as i32 * 150);
-    ui.set_carousel_cur_selected(dh.curretly_selected as i32);
+    ui.set_carousel_viewport_height(dh_handle.image_paths.len() as i32 * 150);
+    ui.set_carousel_cur_selected(dh_handle.curretly_selected as i32);
 
     //Updates main Preview
-    let cur_path = &dh.image_paths[dh.curretly_selected];
+    let cur_path = &dh_handle.image_paths[dh_handle.curretly_selected];
     let cur_selected = Image::load_from_path(&cur_path);
     ui.set_preview_image(
         Result::expect(cur_selected, "msg")
