@@ -5,7 +5,7 @@ use std::path::PathBuf;
 #[derive(Clone, Debug)]
 pub struct DataHandler {
     pub image_paths: Vec<PathBuf>,
-    pub curretly_selected: usize,
+    pub currently_selected: usize,
 
     pub camera_names: Vec<String>,
     pub lens_names: Vec<String>,
@@ -16,8 +16,11 @@ pub struct DataHandler {
 
 impl DataHandler {
     pub fn add_new_images(&mut self, new_image_paths: &mut Vec<PathBuf>) {
+        let new_images_count: usize = new_image_paths.len();
         self.image_paths.append(new_image_paths); 
-        for _i in new_image_paths {
+        
+        for _i in  0..new_images_count{
+            println!("Appending Stuff");
             self.camera_names.append(&mut vec![standard_values::CAMERA_DEFAULT.to_string()]);
             self.lens_names.append(&mut vec![standard_values::LENS_DEFAULT.to_string()]);
             self.iso.append(&mut vec![standard_values::ISO_DEFAULT.to_string()]);
@@ -27,6 +30,6 @@ impl DataHandler {
     }
 
     pub fn set_currently_selected(&mut self, cur: usize){
-        self.curretly_selected = cur;
+        self.currently_selected = cur;
     }
 }

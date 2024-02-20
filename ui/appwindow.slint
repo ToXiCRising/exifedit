@@ -55,7 +55,7 @@ component ExifTile inherits Rectangle {
 
     in property <string> field_name;
     in property <string> preview_text;
-    in property <int> id;
+    in property <int> tile_id;
 
     Rectangle {
         width: parent.width;
@@ -75,7 +75,7 @@ component ExifTile inherits Rectangle {
                 horizontal-alignment: center;
                 placeholder-text: preview_text;
                 font-size: 16px;
-                edited => {Logic.updatedExifField(id, self.text)}
+                edited => {Logic.updatedExifField(tile_id, self.text)}
             }
         } 
     }
@@ -147,31 +147,31 @@ export component AppWindow inherits Window {
                 ExifTile {
                     field_name: "Camera";
                     preview_text: exif_camera_default;
-                    id: 0;
+                    tile_id: 0;
                     y: (-210 + 0 * spacing)* 1px;
                 }
                 ExifTile {
                     field_name: "Lens";
                     preview_text: exif_lens_default;
-                    id: 1;
+                    tile_id: 1;
                     y: (-210 + 1 * spacing)* 1px;
                 }
                 ExifTile {
                     field_name: "ISO/ASA";
                     preview_text: exif_iso_default;
-                    id: 2;
+                    tile_id: 2;
                     y: (-210 + 2 * spacing)* 1px;
                 }
                 ExifTile {
                     field_name: "Aperture";
                     preview_text: exif_aperture_default;
-                    id: 3;
+                    tile_id: 3;
                     y: (-210 + 3 * spacing)* 1px;
                 }
                 ExifTile {
                     field_name: "Shutter Speed";
                     preview_text: exif_shutter_speed_default;
-                    id: 4;
+                    tile_id: 4;
                     y: (-210 + 4 * spacing)* 1px;
                 }
             }  
@@ -180,6 +180,6 @@ export component AppWindow inherits Window {
 }
 
 export global Logic {
-    pure callback clickedImageTile(int);
-    pure callback updatedExifField(int, string);
+    callback clickedImageTile(int);
+    callback updatedExifField(int, string);
 }

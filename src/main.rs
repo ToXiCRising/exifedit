@@ -13,7 +13,7 @@ use slint::Image;
 
 lazy_static! {
     static ref DH: Mutex<DataHandler> = Mutex::new(DataHandler{
-        curretly_selected: 0,
+        currently_selected: 0,
         image_paths: vec![],
 
         camera_names: vec![],
@@ -37,24 +37,6 @@ fn main() -> Result<(), slint::PlatformError> {
 
 
     //------ handling callbacks ------
-    ui.global::<Logic>().on_clickedImageTile({
-        let ui_handle = ui.as_weak();
-        move |id|{
-            let ui = ui_handle.unwrap();
-
-            println!("clicked tile {id}");
-            DH.lock().unwrap().set_currently_selected(id as usize);
-            update(ui, false);
-        }
-    });
-
-    ui.global::<Logic>().on_updatedExifField({
-        let ui_handle = ui.as_weak();
-        move |id, entry|{
-            let ui = ui_handle.unwrap();
-            println!("Field with id: {id}, recieved value {entry}");
-        }
-    });
 
     ui.on_openFileSelector({ 
         let ui_handle = ui.as_weak();
@@ -65,6 +47,62 @@ fn main() -> Result<(), slint::PlatformError> {
             update(ui, true);     
         }
     });
+
+
+    ui.global::<Logic>().on_clickedImageTile({
+        let ui_handle = ui.as_weak();
+        move |id|{
+            let ui = ui_handle.unwrap();
+
+            println!("clicked tile {id}");
+            DH.lock().unwrap().set_currently_selected(id as usize);
+            println!("{}", DH.lock().unwrap().currently_selected);
+            update(ui, false);
+        }
+    });
+
+    ui.global::<Logic>().on_updatedExifField({
+        move |id, entry|{
+            let mut dh_handle = DH.lock().unwrap();
+            let cur = dh_handle.currently_selected;
+            println!("{cur}");
+            if dh_handle.image_paths.len() != 0{
+                match id {
+                    0=>dh_handle.camera_names[cur] = entry.to_string(),
+                    1=>dh_handle.lens_names[cur] = entry.to_string(),
+                    2=>dh_handle.iso[cur] = entry.to_string(),
+                    3=>dh_handle.aperture[cur] = entry.to_string(),
+                    4=>dh_handle.shutter_speed[cur] = entry.to_string(),
+    
+                    i32::MIN..=-1_i32 | 1_i32..=i32::MAX => unimplemented!(),  
+                }
+            }
+        }
+    });
+
+    ui.on_writeExifData({
+        let ui_handle = ui.as_weak();
+        move || {
+            let ui = ui_handle.unwrap();
+            let dh_handle = DH.lock().unwrap();
+            if dh_handle.image_paths.is_empty(){
+                println!("No images loaded yet!")
+            } else {
+                
+                println!("{}", dh_handle.camera_names.len());
+                for i in 0..dh_handle.image_paths.len() {
+                    println!("Camera: {}", dh_handle.camera_names[i]);
+                    println!("Lens: {}", dh_handle.lens_names[i]);
+                    println!("ISO: {}", dh_handle.iso[i]);
+                    println!("Aperture: {}", dh_handle.aperture[i]);
+                    println!("Shutter Speed: {} \n", dh_handle.shutter_speed[i]);
+                }
+
+            }
+        }
+    });
+
+
 
     ui.run()
 }
@@ -82,14 +120,14 @@ fn update(ui: AppWindow, update_carousel: bool){
         );
     
         ui.set_carousel_viewport_height(dh_handle.image_paths.len() as i32 * 150);
-        ui.set_carousel_cur_selected(dh_handle.curretly_selected as i32);
+        ui.set_carousel_cur_selected(dh_handle.currently_selected as i32);
     }
 
     //Updates main Preview
-    let cur_path = &dh_handle.image_paths[dh_handle.curretly_selected];
+    let cur_path = &dh_handle.image_paths[dh_handle.currently_selected];
     let cur_selected = Image::load_from_path(&cur_path);
     ui.set_preview_image(
-        Result::expect(cur_selected, "msg")
+        cur_selected.unwrap()
     );
 
     //updates exif editor

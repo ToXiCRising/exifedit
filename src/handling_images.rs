@@ -20,7 +20,6 @@ pub fn open_file_selector() -> Vec<PathBuf> {
         println!("{}", path.display());
     }
 
-    //return Option::expect(paths.last().cloned(), "msg");
     return paths;
 }
 
