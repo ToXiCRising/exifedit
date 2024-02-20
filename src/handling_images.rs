@@ -3,7 +3,8 @@ use std::path::PathBuf;
 
 
 pub fn import_files() {
-
+    let new_paths = open_file_selector();
+    let (medium_previews, small_previews) = generate_previews(new_paths);
 }
 
 pub fn open_file_selector() -> Vec<PathBuf> {

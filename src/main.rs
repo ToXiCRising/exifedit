@@ -3,6 +3,7 @@ slint::include_modules!();
 mod handling_images;
 mod type_conversion;
 mod data_handler;
+mod standard_values;
 
 use std::path::PathBuf;
 use lazy_static::lazy_static;
@@ -14,12 +15,28 @@ lazy_static! {
     static ref DH: Mutex<DataHandler> = Mutex::new(DataHandler{
         curretly_selected: 0,
         image_paths: vec![],
+
+        camera_names: vec![],
+        lens_names: vec![],
+        iso: vec![],
+        aperture: vec![],
+        shutter_speed: vec![]
     });
 }
 
 fn main() -> Result<(), slint::PlatformError> {
     let ui = AppWindow::new()?;
 
+    //------ setting up icons and standard values ------
+    ui.set_icon_(Image::load_from_path(&PathBuf::from("./recources/ExifToolIcon.png")).unwrap());
+    ui.set_exif_camera_default(slint::SharedString::from(standard_values::CAMERA_DEFAULT));
+    ui.set_exif_lens_default(slint::SharedString::from(standard_values::LENS_DEFAULT));
+    ui.set_exif_iso_default(slint::SharedString::from(standard_values::ISO_DEFAULT));
+    ui.set_exif_aperture_default(slint::SharedString::from(standard_values::APERTURE_DEFAULT));
+    ui.set_exif_shutter_speed_default(slint::SharedString::from(standard_values::SHUTTER_SPEED_DEFAULT));
+
+
+    //------ handling callbacks ------
     ui.global::<Logic>().on_clickedImageTile({
         let ui_handle = ui.as_weak();
         move |id|{
@@ -31,12 +48,20 @@ fn main() -> Result<(), slint::PlatformError> {
         }
     });
 
+    ui.global::<Logic>().on_updatedExifField({
+        let ui_handle = ui.as_weak();
+        move |id, entry|{
+            let ui = ui_handle.unwrap();
+            println!("Field with id: {id}, recieved value {entry}");
+        }
+    });
+
     ui.on_openFileSelector({ 
         let ui_handle = ui.as_weak();
         move || {
             let ui = ui_handle.unwrap();
 
-            DH.lock().unwrap().add_image_paths(&mut handling_images::open_file_selector());
+            DH.lock().unwrap().add_new_images(&mut handling_images::open_file_selector());
             update(ui, true);     
         }
     });
