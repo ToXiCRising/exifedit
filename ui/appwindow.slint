@@ -54,12 +54,12 @@ component ImageTile inherits Rectangle {
 component ExifTile inherits Rectangle {
 
     in property <string> field_name;
-    in property <string> preview_text;
+    in-out property <string> set_text;
     in property <int> tile_id;
 
     Rectangle {
         width: parent.width;
-        height: 80px;
+        height: 100px;
         border-radius: 7px;
         background: #202126;    
 
@@ -71,34 +71,43 @@ component ExifTile inherits Rectangle {
                 horizontal-alignment: center;
                 text: field_name;
             }
+            Text {
+                font-weight: 400;
+                font-size: 14px;
+                horizontal-alignment: center;
+                color: #c8c8c8;
+                text: set_text;
+            }
             LineEdit {
                 horizontal-alignment: center;
-                placeholder-text: preview_text;
                 font-size: 16px;
-                edited => {Logic.updatedExifField(tile_id, self.text)}
+                //edited => {Logic.updatedExifField(tile_id, self.text)}
+                accepted => {Logic.updatedExifField(tile_id, self.text); self.text = ""} //; }
             }
         } 
     }
 }
 
 export component AppWindow inherits Window {
+
     callback openFileSelector;
     callback writeExifData;
 
     in property <image> icon_;
 
     in property <image> preview_image;
+    in property <string> current_image_exif;
 
     in property <[string]> carousel_image_names;
     in property <[image]> carousel_images;
     in property <int> carousel_viewport_height;
     in property <int> carousel_cur_selected;
 
-    in property <string> exif_camera_default;
-    in property <string> exif_lens_default;
-    in property <string> exif_iso_default;
-    in property <string> exif_aperture_default;
-    in property <string> exif_shutter_speed_default;
+    in property <string> exif_camera;
+    in property <string> exif_lens;
+    in property <string> exif_iso;
+    in property <string> exif_aperture;
+    in property <string> exif_shutter_speed;
 
     icon: icon_;
     title: "ExifTool";
@@ -129,6 +138,9 @@ export component AppWindow inherits Window {
             ImageViewer {
                 image: preview_image;
             }
+            Text {
+                text: current_image_exif;
+            }
         }
 
         VerticalBox {
@@ -142,37 +154,37 @@ export component AppWindow inherits Window {
 
             ScrollView {
                 viewport-width: parent.width * 0.9;
-                viewport-height: 512px;
-                property <int> spacing: 95;
+                viewport-height: 768px;
+                property <int> spacing: 120;
                 ExifTile {
-                    field_name: "Camera";
-                    preview_text: exif_camera_default;
+                    field_name: "Camera:";    
+                    set_text: exif_camera;
                     tile_id: 0;
-                    y: (-210 + 0 * spacing)* 1px;
+                    y: (-325 + 0 * spacing)* 1px;
                 }
                 ExifTile {
-                    field_name: "Lens";
-                    preview_text: exif_lens_default;
+                    field_name: "Lens:";
+                    set_text: exif_lens;
                     tile_id: 1;
-                    y: (-210 + 1 * spacing)* 1px;
+                    y: (-325 + 1 * spacing)* 1px;
                 }
                 ExifTile {
-                    field_name: "ISO/ASA";
-                    preview_text: exif_iso_default;
+                    field_name: "ISO/ASA:";
+                    set_text: exif_iso;
                     tile_id: 2;
-                    y: (-210 + 2 * spacing)* 1px;
+                    y: (-325 + 2 * spacing)* 1px;
                 }
                 ExifTile {
-                    field_name: "Aperture";
-                    preview_text: exif_aperture_default;
+                    field_name: "Aperture:";
+                    set_text: exif_aperture;
                     tile_id: 3;
-                    y: (-210 + 3 * spacing)* 1px;
+                    y: (-325 + 3 * spacing)* 1px;
                 }
                 ExifTile {
-                    field_name: "Shutter Speed";
-                    preview_text: exif_shutter_speed_default;
+                    field_name: "Shutter Speed:";           
+                    set_text: exif_shutter_speed;
                     tile_id: 4;
-                    y: (-210 + 4 * spacing)* 1px;
+                    y: (-325 + 4 * spacing)* 1px;
                 }
             }  
         }

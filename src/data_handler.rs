@@ -20,7 +20,7 @@ impl DataHandler {
         self.image_paths.append(new_image_paths); 
         
         for _i in  0..new_images_count{
-            println!("Appending Stuff");
+            //println!("Appending Stuff");
             self.camera_names.append(&mut vec![standard_values::CAMERA_DEFAULT.to_string()]);
             self.lens_names.append(&mut vec![standard_values::LENS_DEFAULT.to_string()]);
             self.iso.append(&mut vec![standard_values::ISO_DEFAULT.to_string()]);
