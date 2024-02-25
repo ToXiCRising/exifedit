@@ -104,6 +104,7 @@ export component AppWindow inherits Window {
 
     in property <string> exif_camera;
     in property <string> exif_lens;
+    in property <string> exif_focal_length;
     in property <string> exif_iso;
     in property <string> exif_aperture;
     in property <string> exif_shutter_speed;
@@ -159,31 +160,37 @@ export component AppWindow inherits Window {
                     field_name: "Camera:";    
                     set_text: exif_camera;
                     tile_id: 0;
-                    y: (-325 + 0 * spacing)* 1px;
+                    y: (-325 + self.tile_id * spacing)* 1px;
                 }
                 ExifTile {
                     field_name: "Lens:";
                     set_text: exif_lens;
                     tile_id: 1;
-                    y: (-325 + 1 * spacing)* 1px;
+                    y: (-325 + self.tile_id * spacing)* 1px;
+                }
+                ExifTile {
+                    field_name: "Focal Length:";
+                    set_text: exif_focal_length;
+                    tile_id: 2;
+                    y: (-325 + self.tile_id * spacing)* 1px;
                 }
                 ExifTile {
                     field_name: "ISO/ASA:";
                     set_text: exif_iso;
-                    tile_id: 2;
-                    y: (-325 + 2 * spacing)* 1px;
+                    tile_id: 3;
+                    y: (-325 + self.tile_id * spacing)* 1px;
                 }
                 ExifTile {
                     field_name: "Aperture:";
                     set_text: exif_aperture;
-                    tile_id: 3;
-                    y: (-325 + 3 * spacing)* 1px;
+                    tile_id: 4;
+                    y: (-325 + self.tile_id * spacing)* 1px;
                 }
                 ExifTile {
                     field_name: "Shutter Speed:";           
                     set_text: exif_shutter_speed;
-                    tile_id: 4;
-                    y: (-325 + 4 * spacing)* 1px;
+                    tile_id: 5;
+                    y: (-325 + self.tile_id * spacing)* 1px;
                 }
             }  
         }

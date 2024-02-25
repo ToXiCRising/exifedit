@@ -5,8 +5,8 @@ use std::path::PathBuf;
 pub fn open_file_selector() -> Vec<PathBuf> {
     let paths = FileDialog::new()
     .set_location("~/Desktop")
-    .add_filter("PNG Image", &["png"])
     .add_filter("JPEG Image", &["jpg", "jpeg"])
+    .add_filter("PNG Image", &["png"])
     .show_open_multiple_file()
     .unwrap();
     

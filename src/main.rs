@@ -6,10 +6,11 @@ mod data_handler;
 mod standard_values;
 
 use std::path::PathBuf;
-use lazy_static::lazy_static;
+use std::process::Command;
 use std::sync::Mutex;
-use data_handler::DataHandler;
+use lazy_static::lazy_static;
 use slint::Image;
+use data_handler::DataHandler;
 
 lazy_static! {
     static ref DH: Mutex<DataHandler> = Mutex::new(DataHandler{
@@ -18,6 +19,7 @@ lazy_static! {
 
         camera_names: vec![],
         lens_names: vec![],
+        focal_length: vec![],
         iso: vec![],
         aperture: vec![],
         shutter_speed: vec![]
@@ -31,6 +33,7 @@ fn main() -> Result<(), slint::PlatformError> {
     ui.set_icon_(Image::load_from_path(&PathBuf::from("./recources/ExifToolIcon.png")).unwrap());
     ui.set_exif_camera((standard_values::CAMERA_DEFAULT).into());
     ui.set_exif_lens((standard_values::LENS_DEFAULT).into());
+    ui.set_exif_focal_length((standard_values::FOCAL_LENGTH).into());
     ui.set_exif_iso((standard_values::ISO_DEFAULT).into());
     ui.set_exif_aperture((standard_values::APERTURE_DEFAULT).into());
     ui.set_exif_shutter_speed((standard_values::SHUTTER_SPEED_DEFAULT).into());
@@ -75,9 +78,10 @@ fn main() -> Result<(), slint::PlatformError> {
                 match id {
                     0=>DH.lock().unwrap().camera_names[cur] = entry.to_string(),
                     1=>DH.lock().unwrap().lens_names[cur] = entry.to_string(),
-                    2=>DH.lock().unwrap().iso[cur] = entry.to_string(),
-                    3=>DH.lock().unwrap().aperture[cur] = entry.to_string(),
-                    4=>DH.lock().unwrap().shutter_speed[cur] = entry.to_string(),
+                    2=>DH.lock().unwrap().focal_length[cur] = entry.to_string(),
+                    3=>DH.lock().unwrap().iso[cur] = entry.to_string(),
+                    4=>DH.lock().unwrap().aperture[cur] = entry.to_string(),
+                    5=>DH.lock().unwrap().shutter_speed[cur] = entry.to_string(),
             
                     i32::MIN..=-1_i32 | 1_i32..=i32::MAX => unimplemented!(),  
                 }
@@ -94,17 +98,19 @@ fn main() -> Result<(), slint::PlatformError> {
             if DH.lock().unwrap().image_paths.is_empty(){
                 println!("No images loaded yet!")
             } else {
+                let num_images = DH.lock().unwrap().image_paths.len();
                 
-                println!("{}", DH.lock().unwrap().camera_names.len());
-                for i in 0..DH.lock().unwrap().image_paths.len() {
+                //println!("{}", DH.lock().unwrap().camera_names.len());
+                for i in 0..num_images {
                     println!("Camera: {}", DH.lock().unwrap().camera_names[i]);
                     println!("Lens: {}", DH.lock().unwrap().lens_names[i]);
+                    println!("Focal Length: {}", DH.lock().unwrap().focal_length[i]);
                     println!("ISO: {}", DH.lock().unwrap().iso[i]);
                     println!("Aperture: {}", DH.lock().unwrap().aperture[i]);
                     println!("Shutter Speed: {} \n", DH.lock().unwrap().shutter_speed[i]);
                 }
 
-                //call_exiftool();
+                call_exiftool();
             }
         }
     });
@@ -143,30 +149,29 @@ fn update_exif_tiles(ui: &AppWindow){
 
     ui.set_exif_camera((&DH.lock().unwrap().camera_names[cur]).into());
     ui.set_exif_lens((&DH.lock().unwrap().lens_names[cur]).into());
+    ui.set_exif_focal_length((&DH.lock().unwrap().focal_length[cur]).into());
     ui.set_exif_iso((&DH.lock().unwrap().iso[cur]).into());
     ui.set_exif_aperture((&DH.lock().unwrap().aperture[cur]).into());
     ui.set_exif_shutter_speed((&DH.lock().unwrap().shutter_speed[cur]).into());
 }
 
 fn call_exiftool(){
-    use std::process::Command;
-    let cur = DH.lock().unwrap().currently_selected;
+    let num_images = DH.lock().unwrap().image_paths.len();
     
-    let output = Command::new("echo").arg("hi").output().expect("echo command failed to start");
-
-    //println!("status: {}", output.status);
-
-
-    //TODO: Fix This!
-    //Command::new("echo")
-    //                    .arg(format!("-make=\"{}\"", DH.lock().unwrap().camera_names[cur]))
-    //                    .arg(format!("-model=\"{}\"", DH.lock().unwrap().camera_names[cur]))
-    //                    .arg(format!("-lens=\"{}\"", DH.lock().unwrap().lens_names[cur]))
-    //                    .arg("-focallength=\"127\"")
-    //                    .arg(format!("-iso=\"{}\"", DH.lock().unwrap().iso[cur]))
-    //                    .arg(format!("-aperturevalue=\"{}\"", DH.lock().unwrap().aperture[cur]))
-    //                    .arg(format!("-Fnumber=\"{}\"", DH.lock().unwrap().aperture[cur]))
-    //                    .arg(format!("-exposuretime=\"{}\"", DH.lock().unwrap().shutter_speed[cur]))
-    //                    .spawn().expect("test");
+    for i in 0..num_images {
+        let (manufacturer, model) = type_conversion::split_camera_name(DH.lock().unwrap().camera_names[i].clone());
+        let output = Command::new("exiftool")
+                        .arg(format!("-make=\"{}\"", manufacturer))
+                        .arg(format!("-model=\"{}\"", model))
+                        .arg(format!("-lens=\"{}\"", DH.lock().unwrap().lens_names[i]))
+                        .arg(format!("-focallength={}", DH.lock().unwrap().focal_length[i]))
+                        .arg(format!("-iso={}", DH.lock().unwrap().iso[i]))
+                        .arg(format!("-aperturevalue={}", DH.lock().unwrap().aperture[i]))
+                        .arg(format!("-Fnumber={}", DH.lock().unwrap().aperture[i]))
+                        .arg(format!("-exposuretime={}", DH.lock().unwrap().shutter_speed[i]))
+                        .arg(&DH.lock().unwrap().image_paths[i])
+                        .status().expect("exiftool failed!");
+        println!("{output}");
+    }
 }
 
