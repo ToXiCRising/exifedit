@@ -28,8 +28,4 @@ impl DataHandler {
             self.shutter_speed.append(&mut vec![standard_values::SHUTTER_SPEED_DEFAULT.to_string()]);
         }
     }
-
-    pub fn set_currently_selected(&mut self, cur: usize){
-        self.currently_selected = cur;
-    }
 }

@@ -56,7 +56,7 @@ fn main() -> Result<(), slint::PlatformError> {
             let ui = ui_handle.unwrap();
 
             //println!("clicked tile {id}");
-            DH.lock().unwrap().set_currently_selected(id as usize);
+            DH.lock().unwrap().currently_selected = id as usize;
             println!("{}", DH.lock().unwrap().currently_selected);
             update_main_view(&ui);
             update_exif_tiles(&ui);
@@ -67,11 +67,10 @@ fn main() -> Result<(), slint::PlatformError> {
         let ui_handle = ui.as_weak();
         move |id, entry|{
             let ui = ui_handle.unwrap();
-            //let mut DH.lock().unwrap() = DH.lock().unwrap();
+
             let cur = DH.lock().unwrap().currently_selected;
             let no_images = DH.lock().unwrap().image_paths.len() == 0;
 
-            //println!("{cur}");
             if  !no_images {
                 match id {
                     0=>DH.lock().unwrap().camera_names[cur] = entry.to_string(),
@@ -104,12 +103,11 @@ fn main() -> Result<(), slint::PlatformError> {
                     println!("Aperture: {}", DH.lock().unwrap().aperture[i]);
                     println!("Shutter Speed: {} \n", DH.lock().unwrap().shutter_speed[i]);
                 }
+
                 //call_exiftool();
             }
         }
     });
-
-
 
     ui.run()
 }
@@ -154,7 +152,7 @@ fn call_exiftool(){
     use std::process::Command;
     let cur = DH.lock().unwrap().currently_selected;
     
-    //let output = Command::new("echo").arg("hi").output().expect("echo command failed to start");
+    let output = Command::new("echo").arg("hi").output().expect("echo command failed to start");
 
     //println!("status: {}", output.status);
 

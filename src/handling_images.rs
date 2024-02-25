@@ -2,11 +2,6 @@ use native_dialog::FileDialog;
 use std::path::PathBuf;
 
 
-pub fn import_files() {
-    let new_paths = open_file_selector();
-    let (medium_previews, small_previews) = generate_previews(new_paths);
-}
-
 pub fn open_file_selector() -> Vec<PathBuf> {
     let paths = FileDialog::new()
     .set_location("~/Desktop")
@@ -24,6 +19,8 @@ pub fn open_file_selector() -> Vec<PathBuf> {
 }
 
 fn generate_previews(original_image_paths: Vec<PathBuf>) -> (Vec<PathBuf>, Vec<PathBuf>){
+    todo!("Generation of previews is not implemented yet");
+    
     let preview_image_med_paths: Vec<PathBuf> = vec![];
     let preview_image_smol_paths: Vec<PathBuf> = vec![];
 

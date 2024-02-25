@@ -81,8 +81,7 @@ component ExifTile inherits Rectangle {
             LineEdit {
                 horizontal-alignment: center;
                 font-size: 16px;
-                //edited => {Logic.updatedExifField(tile_id, self.text)}
-                accepted => {Logic.updatedExifField(tile_id, self.text); self.text = ""} //; }
+                accepted => {Logic.updatedExifField(tile_id, self.text); self.text = ""} 
             }
         } 
     }
