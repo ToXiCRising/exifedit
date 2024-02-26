@@ -1,12 +1,13 @@
 # Exifedit 
 A very small tool to call exiftool to edit metadata of analog pictures. Build with Rust and Slint.
 
-# TODO!
-## Smallish Stuff
-- [ ] proper/better handling of exif field updates and default values
-- [ ] find a fix for the case of values being entered into exif fields before images are loaded
+# Future Features and Ideas
+- [ ] Color coding of carousel titles based on selection, and if writing of data was succesful
+- [ ] a way to remove pictures from current session
 
-## Bigger Stuff
+- [ ] dynamic exif tile system
+
+- [ ] loading bar? 
 - [ ] implement image compression or better caching to optimize responsivenes
 
 ## Stuff
