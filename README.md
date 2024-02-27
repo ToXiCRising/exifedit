@@ -1,5 +1,10 @@
 # Exifedit 
-A very small tool to call exiftool to edit metadata of analog pictures. Build with Rust and Slint.
+
+<p align="center">
+  <img src="recources\ExifToolIcon.png">
+</p>
+
+A very small gui that calls exiftool to edit metadata of analog pictures. Build with Rust and Slint. Currently only tested in Windows 10 and requires exiftool to be placed in PATH.
 
 # Future Features and Ideas
 - [ ] Color coding of carousel titles based on selection, and if writing of data was succesful
