@@ -5,11 +5,12 @@ mod type_conversion;
 mod data_handler;
 mod standard_values;
 
+use core::num;
 use std::path::PathBuf;
 use std::process::Command;
 use std::sync::Mutex;
 use lazy_static::lazy_static;
-use slint::Image;
+use slint::{Image, SharedString, platform};
 use data_handler::DataHandler;
 
 lazy_static! {
@@ -73,9 +74,9 @@ fn main() -> Result<(), slint::PlatformError> {
             let ui = ui_handle.unwrap();
 
             let cur = DH.lock().unwrap().currently_selected;
-            let no_images = DH.lock().unwrap().image_paths.len() == 0;
+            let num_images = DH.lock().unwrap().number_of_images();
 
-            if  !no_images {
+            if  num_images != 0 {
                 match id {
                     0=>DH.lock().unwrap().camera_names[cur] = entry.to_string(),
                     1=>DH.lock().unwrap().lens_names[cur] = entry.to_string(),
@@ -99,7 +100,7 @@ fn main() -> Result<(), slint::PlatformError> {
             if DH.lock().unwrap().image_paths.is_empty(){
                 println!("No images loaded yet!")
             } else {
-                let num_images = DH.lock().unwrap().image_paths.len();
+                let num_images = DH.lock().unwrap().number_of_images();
                 
                 //println!("{}", DH.lock().unwrap().camera_names.len());
                 for i in 0..num_images {
@@ -112,6 +113,42 @@ fn main() -> Result<(), slint::PlatformError> {
                 }
 
                 call_exiftool();
+            }
+        }
+    });
+
+    //TODO find the type of the keyEvent
+    ui.on_keyPressed({
+        let ui_handle = ui.as_weak();
+        move |key_event| {
+            let ui = ui_handle.unwrap();
+            let num_images = DH.lock().unwrap().number_of_images();
+
+            if  num_images != 0 {
+                if key_event.text == SharedString::from(platform::Key::Tab) {
+                    println!("Tabbed");
+                }
+
+                // Navigation through the carousel
+                if key_event.text == SharedString::from(platform::Key::UpArrow) || 
+                   key_event.text == SharedString::from(platform::Key::LeftArrow) {
+                    if DH.lock().unwrap().currently_selected == 0 {
+                        DH.lock().unwrap().currently_selected = num_images - 1;
+                    } else {
+                        DH.lock().unwrap().currently_selected -= 1;
+                    }
+                    update_main_view(&ui);
+                }
+                if key_event.text == SharedString::from(platform::Key::DownArrow) || 
+                   key_event.text == SharedString::from(platform::Key::RightArrow) {
+                    if DH.lock().unwrap().currently_selected == num_images - 1 {
+                        DH.lock().unwrap().currently_selected = 0;
+                    } else {
+                        DH.lock().unwrap().currently_selected += 1;
+                    }
+                    update_main_view(&ui);
+                }
+                
             }
         }
     });

@@ -30,4 +30,7 @@ impl DataHandler {
             self.shutter_speed.append(&mut vec![standard_values::SHUTTER_SPEED_DEFAULT.to_string()]);
         }
     }
+    pub fn number_of_images(&mut self) -> usize{
+        return self.image_paths.len();
+    }
 }

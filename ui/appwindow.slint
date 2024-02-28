@@ -91,6 +91,7 @@ export component AppWindow inherits Window {
 
     callback openFileSelector;
     callback writeExifData;
+    callback keyPressed(KeyEvent);
 
     in property <image> icon_;
 
@@ -109,11 +110,20 @@ export component AppWindow inherits Window {
     in property <string> exif_aperture;
     in property <string> exif_shutter_speed;
 
+
+    forward-focus: key-handler;
+    
+
     icon: icon_;
     title: "ExifTool";
 
     
-
+    key-handler:= FocusScope{
+        key-pressed(event) => {
+            keyPressed(event);
+            accept;
+        }
+        
     HorizontalBox {
         VerticalBox {
             width: 256px;
@@ -196,6 +206,7 @@ export component AppWindow inherits Window {
                 }
             }  
         }
+    }
     }  
 }
 
