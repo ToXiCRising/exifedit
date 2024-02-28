@@ -10,5 +10,8 @@ A very small tool to call exiftool to edit metadata of analog pictures. Build wi
 - [ ] loading bar? 
 - [ ] implement image compression or better caching to optimize responsivenes
 
+# Bugfixes
+- [ ] Crashes if you exit out of the file selector dialog
+
 ## Stuff
 - Lazy static explanation for datahandler: https://stackoverflow.com/questions/27791532/how-do-i-create-a-global-mutable-singleton

@@ -1,11 +1,10 @@
 slint::include_modules!();
 
-mod handling_images;
+mod loading_and_manipulating_data;
 mod type_conversion;
 mod data_handler;
 mod standard_values;
 
-use core::num;
 use std::path::PathBuf;
 use std::process::Command;
 use std::sync::Mutex;
@@ -48,7 +47,7 @@ fn main() -> Result<(), slint::PlatformError> {
         move || {
             let ui = ui_handle.unwrap();
 
-            DH.lock().unwrap().add_new_images(&mut handling_images::open_file_selector());
+            DH.lock().unwrap().add_new_images(&mut loading_and_manipulating_data::open_file_selector());
             update_main_view(&ui);
             update_carousel(&ui);     
         }
@@ -125,6 +124,7 @@ fn main() -> Result<(), slint::PlatformError> {
             let num_images = DH.lock().unwrap().number_of_images();
 
             if  num_images != 0 {
+                // Tabbing thorugh exif-tiles
                 if key_event.text == SharedString::from(platform::Key::Tab) {
                     println!("Tabbed");
                 }
