@@ -19,4 +19,9 @@ A very small gui that calls exiftool to edit metadata of analog pictures. Build 
 - [x] Crashes if you exit out of the file selector dialog
 
 ## Stuff
-- Lazy static explanation for datahandler: https://stackoverflow.com/questions/27791532/how-do-i-create-a-global-mutable-singleton
+- Lazy static explanation for datahandler: 
+   - https://stackoverflow.com/questions/27791532/how-do-i-create-a-global-mutable-singleton
+
+- Adding the Icon:
+   - https://anthropicstudios.com/2021/01/05/setting-a-rust-windows-exe-icon/
+   - https://stackoverflow.com/questions/50642574/how-can-i-specify-linker-flags-arguments-in-a-build-script

@@ -31,6 +31,9 @@ fn main() -> Result<(), slint::PlatformError> {
 
     //------ setting up icons and standard values ------
     //TODO: emmbed the png into the exe, the program cant find it otherwise 
+
+    //let icon = std::include_bytes!("../recources/ExifToolIcon.png");
+
     ui.set_icon_(Image::load_from_path(&PathBuf::from("./recources/ExifToolIcon.png")).unwrap());
     ui.set_exif_camera((standard_values::CAMERA_DEFAULT).into());
     ui.set_exif_lens((standard_values::LENS_DEFAULT).into());
