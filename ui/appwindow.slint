@@ -58,6 +58,7 @@ component ExifTile inherits Rectangle {
     in property <int> tile_id;
     in property <bool> has_focus;
 
+
     Rectangle {
         width: parent.width;
         height: 100px;
@@ -79,10 +80,11 @@ component ExifTile inherits Rectangle {
                 color: #c8c8c8;
                 text: set_text;
             }
-            LineEdit {
+            LE := LineEdit {
                 horizontal-alignment: center;
                 font-size: 16px;
                 accepted => {Logic.updatedExifField(tile_id, self.text); self.text = ""} 
+            
             }
         } 
     }

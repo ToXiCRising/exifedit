@@ -117,7 +117,7 @@ fn main() -> Result<(), slint::PlatformError> {
             let num_images = DH.lock().unwrap().get_number_of_images();
 
             if  num_images != 0 {
-                // Tabbing thorugh exif-tiles
+                // Tabbing through exif-tiles
                 if key_event.text == SharedString::from(platform::Key::Tab) &&
                    !key_event.modifiers.shift{
                     println!("Tabbed");
