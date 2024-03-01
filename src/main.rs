@@ -106,9 +106,11 @@ fn main() -> Result<(), slint::PlatformError> {
                     println!("ISO: {}", DH.lock().unwrap().iso[i]);
                     println!("Aperture: {}", DH.lock().unwrap().aperture[i]);
                     println!("Shutter Speed: {} \n", DH.lock().unwrap().shutter_speed[i]);
+
+                    let _exit_code = call_exiftool(i);
                 }
 
-                call_exiftool();
+                
             }
         }
     });
@@ -200,23 +202,21 @@ fn update_exif_tiles(ui: &AppWindow){
     ui.set_exif_shutter_speed((&DH.lock().unwrap().shutter_speed[cur]).into());
 }
 
-fn call_exiftool(){
-    let num_images = DH.lock().unwrap().image_paths.len();
+fn call_exiftool(i: usize) -> i32{
     
-    for i in 0..num_images {
-        let (manufacturer, model) = type_conversion::split_camera_name(DH.lock().unwrap().camera_names[i].clone());
-        let output = Command::new("exiftool")
-                        .arg(format!("-make=\"{}\"", manufacturer))
-                        .arg(format!("-model=\"{}\"", model))
-                        .arg(format!("-lens=\"{}\"", DH.lock().unwrap().lens_names[i]))
-                        .arg(format!("-focallength={}", DH.lock().unwrap().focal_length[i]))
-                        .arg(format!("-iso={}", DH.lock().unwrap().iso[i]))
-                        .arg(format!("-aperturevalue={}", DH.lock().unwrap().aperture[i]))
-                        .arg(format!("-Fnumber={}", DH.lock().unwrap().aperture[i]))
-                        .arg(format!("-exposuretime={}", DH.lock().unwrap().shutter_speed[i]))
-                        .arg(&DH.lock().unwrap().image_paths[i])
-                        .status().expect("exiftool failed!");
-        println!("{output}");
-    }
+    let (manufacturer, model) = type_conversion::split_camera_name(DH.lock().unwrap().camera_names[i].clone());
+    let output = Command::new("exiftool")
+                    .arg(format!("-make=\"{}\"", manufacturer))
+                    .arg(format!("-model=\"{}\"", model))
+                    .arg(format!("-lens=\"{}\"", DH.lock().unwrap().lens_names[i]))
+                    .arg(format!("-focallength={}", DH.lock().unwrap().focal_length[i]))
+                    .arg(format!("-iso={}", DH.lock().unwrap().iso[i]))
+                    .arg(format!("-aperturevalue={}", DH.lock().unwrap().aperture[i]))
+                    .arg(format!("-Fnumber={}", DH.lock().unwrap().aperture[i]))
+                    .arg(format!("-exposuretime={}", DH.lock().unwrap().shutter_speed[i]))
+                    .arg(&DH.lock().unwrap().image_paths[i])
+                    .status().expect("exiftool failed!");
+    println!("{output}");
+    return output.code().unwrap();
 }
 
