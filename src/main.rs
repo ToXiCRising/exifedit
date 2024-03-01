@@ -100,13 +100,7 @@ fn main() -> Result<(), slint::PlatformError> {
                 
                 //println!("{}", DH.lock().unwrap().camera_names.len());
                 for i in 0..num_images {
-                    println!("Camera: {}", DH.lock().unwrap().camera_names[i]);
-                    println!("Lens: {}", DH.lock().unwrap().lens_names[i]);
-                    println!("Focal Length: {}", DH.lock().unwrap().focal_length[i]);
-                    println!("ISO: {}", DH.lock().unwrap().iso[i]);
-                    println!("Aperture: {}", DH.lock().unwrap().aperture[i]);
-                    println!("Shutter Speed: {} \n", DH.lock().unwrap().shutter_speed[i]);
-
+                    //TODO: Handle the exit codes of exiftool!
                     let _exit_code = call_exiftool(i);
                 }
 
@@ -205,6 +199,14 @@ fn update_exif_tiles(ui: &AppWindow){
 fn call_exiftool(i: usize) -> i32{
     
     let (manufacturer, model) = type_conversion::split_camera_name(DH.lock().unwrap().camera_names[i].clone());
+    
+    println!("\nCamera: {}", DH.lock().unwrap().camera_names[i]);
+    println!("Lens: {}", DH.lock().unwrap().lens_names[i]);
+    println!("Focal Length: {}", DH.lock().unwrap().focal_length[i]);
+    println!("ISO: {}", DH.lock().unwrap().iso[i]);
+    println!("Aperture: {}", DH.lock().unwrap().aperture[i]);
+    println!("Shutter Speed: {} \n", DH.lock().unwrap().shutter_speed[i]);
+    
     let output = Command::new("exiftool")
                     .arg(format!("-make=\"{}\"", manufacturer))
                     .arg(format!("-model=\"{}\"", model))
@@ -216,7 +218,7 @@ fn call_exiftool(i: usize) -> i32{
                     .arg(format!("-exposuretime={}", DH.lock().unwrap().shutter_speed[i]))
                     .arg(&DH.lock().unwrap().image_paths[i])
                     .status().expect("exiftool failed!");
-    println!("{output}");
+    println!("{output}\n");
     return output.code().unwrap();
 }
 
