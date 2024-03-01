@@ -56,6 +56,8 @@ component ExifTile inherits Rectangle {
     in property <string> field_name;
     in-out property <string> set_text;
     in property <int> tile_id;
+    in property <bool> has_focus;
+
 
     Rectangle {
         width: parent.width;
@@ -78,10 +80,11 @@ component ExifTile inherits Rectangle {
                 color: #c8c8c8;
                 text: set_text;
             }
-            LineEdit {
+            LE := LineEdit {
                 horizontal-alignment: center;
                 font-size: 16px;
                 accepted => {Logic.updatedExifField(tile_id, self.text); self.text = ""} 
+            
             }
         } 
     }
@@ -91,6 +94,7 @@ export component AppWindow inherits Window {
 
     callback openFileSelector;
     callback writeExifData;
+    callback keyPressed(KeyEvent);
 
     in property <image> icon_;
 
@@ -108,10 +112,22 @@ export component AppWindow inherits Window {
     in property <string> exif_iso;
     in property <string> exif_aperture;
     in property <string> exif_shutter_speed;
+    in property <int> exif_selected;
+
+
+    forward-focus: key-handler;
+    
 
     icon: icon_;
     title: "ExifTool";
 
+    
+    key-handler:= FocusScope{
+        key-pressed(event) => {
+            keyPressed(event);
+            accept;
+        }
+        
     HorizontalBox {
         VerticalBox {
             width: 256px;
@@ -160,7 +176,8 @@ export component AppWindow inherits Window {
                     field_name: "Camera:";    
                     set_text: exif_camera;
                     tile_id: 0;
-                    y: (-325 + self.tile_id * spacing)* 1px;
+                    y: (-325 + self.tile_id * spacing)* 1px;    
+                    
                 }
                 ExifTile {
                     field_name: "Lens:";
@@ -194,6 +211,7 @@ export component AppWindow inherits Window {
                 }
             }  
         }
+    }
     }  
 }
 

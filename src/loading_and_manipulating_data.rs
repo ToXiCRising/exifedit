@@ -8,7 +8,9 @@ pub fn open_file_selector() -> Vec<PathBuf> {
     .add_filter("JPEG Image", &["jpg", "jpeg"])
     .add_filter("PNG Image", &["png"])
     .show_open_multiple_file()
-    .unwrap();
+    .unwrap_or_else(|error| {
+        panic!("{:?}", error);
+    });
     
 
     for path in paths.iter(){
