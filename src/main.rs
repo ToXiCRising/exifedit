@@ -73,7 +73,7 @@ fn main() -> Result<(), slint::PlatformError> {
             let ui = ui_handle.unwrap();
 
             let cur = DH.lock().unwrap().currently_selected;
-            let num_images = DH.lock().unwrap().number_of_images();
+            let num_images = DH.lock().unwrap().get_number_of_images();
 
             if  num_images != 0 {
                 match id {
@@ -92,14 +92,11 @@ fn main() -> Result<(), slint::PlatformError> {
     });
 
     ui.on_writeExifData({
-        let ui_handle = ui.as_weak();
         move || {
-            let ui = ui_handle.unwrap();
-
             if DH.lock().unwrap().image_paths.is_empty(){
                 println!("No images loaded yet!")
             } else {
-                let num_images = DH.lock().unwrap().number_of_images();
+                let num_images = DH.lock().unwrap().get_number_of_images();
                 
                 //println!("{}", DH.lock().unwrap().camera_names.len());
                 for i in 0..num_images {
@@ -116,17 +113,23 @@ fn main() -> Result<(), slint::PlatformError> {
         }
     });
 
-    //TODO find the type of the keyEvent
+    // ------ handles key-based navigation ------
     ui.on_keyPressed({
         let ui_handle = ui.as_weak();
         move |key_event| {
             let ui = ui_handle.unwrap();
-            let num_images = DH.lock().unwrap().number_of_images();
+            let num_images = DH.lock().unwrap().get_number_of_images();
 
             if  num_images != 0 {
                 // Tabbing thorugh exif-tiles
-                if key_event.text == SharedString::from(platform::Key::Tab) {
+                if key_event.text == SharedString::from(platform::Key::Tab) &&
+                   !key_event.modifiers.shift{
                     println!("Tabbed");
+                }
+                //NOTE: Backtab would be the right key, but doesnt seem to work 
+                if key_event.text == SharedString::from(platform::Key::Tab) &&
+                   key_event.modifiers.shift {
+                    println!("Backtabbed");
                 }
 
                 // Navigation through the carousel
@@ -147,8 +150,7 @@ fn main() -> Result<(), slint::PlatformError> {
                         DH.lock().unwrap().currently_selected += 1;
                     }
                     update_main_view(&ui);
-                }
-                
+                }         
             }
         }
     });
@@ -159,6 +161,10 @@ fn main() -> Result<(), slint::PlatformError> {
 
 fn update_main_view(ui: &AppWindow){
     //Updates main Preview
+
+    if DH.lock().unwrap().get_number_of_images() == 0 {
+        return;
+    }
 
     let cur = DH.lock().unwrap().currently_selected;
     let cur_path = &DH.lock().unwrap().image_paths[cur];

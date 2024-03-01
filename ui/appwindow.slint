@@ -56,6 +56,7 @@ component ExifTile inherits Rectangle {
     in property <string> field_name;
     in-out property <string> set_text;
     in property <int> tile_id;
+    in property <bool> has_focus;
 
     Rectangle {
         width: parent.width;
@@ -109,6 +110,7 @@ export component AppWindow inherits Window {
     in property <string> exif_iso;
     in property <string> exif_aperture;
     in property <string> exif_shutter_speed;
+    in property <int> exif_selected;
 
 
     forward-focus: key-handler;
@@ -172,7 +174,8 @@ export component AppWindow inherits Window {
                     field_name: "Camera:";    
                     set_text: exif_camera;
                     tile_id: 0;
-                    y: (-325 + self.tile_id * spacing)* 1px;
+                    y: (-325 + self.tile_id * spacing)* 1px;    
+                    
                 }
                 ExifTile {
                     field_name: "Lens:";
