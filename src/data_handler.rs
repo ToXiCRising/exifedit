@@ -35,7 +35,10 @@ impl DataHandler {
             self.shutter_speed.append(&mut vec![standard_values::SHUTTER_SPEED_DEFAULT.to_string()]);
         }
     }
-    pub fn get_number_of_images(&mut self) -> usize{
+    ///NOI: number of images 
+    ///
+    ///Returns the number of curently tracked images, by returning the length of the image_paths vector
+    pub fn get_noi(&mut self) -> usize{
         return self.image_paths.len();
     }
 }

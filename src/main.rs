@@ -12,6 +12,7 @@ use lazy_static::lazy_static;
 use slint::{Image, SharedString, platform};
 use data_handler::DataHandler;
 
+
 lazy_static! {
     static ref DH: Mutex<DataHandler> = Mutex::new(DataHandler{
         currently_selected: 0,
@@ -34,7 +35,7 @@ fn main() -> Result<(), slint::PlatformError> {
 
     //let icon = std::include_bytes!("../recources/ExifToolIcon.png");
 
-    ui.set_icon_(Image::load_from_path(&PathBuf::from("./recources/ExifToolIcon.png")).unwrap());
+    //ui.set_icon_(Image::load_from_path(&PathBuf::from("./recources/ExifToolIcon.png")).unwrap());
     ui.set_exif_camera((standard_values::CAMERA_DEFAULT).into());
     ui.set_exif_lens((standard_values::LENS_DEFAULT).into());
     ui.set_exif_focal_length((standard_values::FOCAL_LENGTH).into());
@@ -76,7 +77,7 @@ fn main() -> Result<(), slint::PlatformError> {
             let ui = ui_handle.unwrap();
 
             let cur = DH.lock().unwrap().currently_selected;
-            let num_images = DH.lock().unwrap().get_number_of_images();
+            let num_images = DH.lock().unwrap().get_noi();
 
             if  num_images != 0 {
                 match id {
@@ -99,15 +100,12 @@ fn main() -> Result<(), slint::PlatformError> {
             if DH.lock().unwrap().image_paths.is_empty(){
                 println!("No images loaded yet!")
             } else {
-                let num_images = DH.lock().unwrap().get_number_of_images();
+                let num_images = DH.lock().unwrap().get_noi();
                 
-                //println!("{}", DH.lock().unwrap().camera_names.len());
                 for i in 0..num_images {
                     //TODO: Handle the exit codes of exiftool!
                     let _exit_code = call_exiftool(i);
-                }
-
-                
+                }  
             }
         }
     });
@@ -117,7 +115,7 @@ fn main() -> Result<(), slint::PlatformError> {
         let ui_handle = ui.as_weak();
         move |key_event| {
             let ui = ui_handle.unwrap();
-            let num_images = DH.lock().unwrap().get_number_of_images();
+            let num_images = DH.lock().unwrap().get_noi();
 
             if  num_images != 0 {
                 // Tabbing through exif-tiles
@@ -161,7 +159,7 @@ fn main() -> Result<(), slint::PlatformError> {
 fn update_main_view(ui: &AppWindow){
     //Updates main Preview
 
-    if DH.lock().unwrap().get_number_of_images() == 0 {
+    if DH.lock().unwrap().get_noi() == 0 {
         return;
     }
 
