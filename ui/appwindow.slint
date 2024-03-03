@@ -1,36 +1,23 @@
 import { Button, VerticalBox, HorizontalBox, StandardListView, ScrollView, LineEdit } from "std-widgets.slint";
-
-export global Palette{
-    out property <color> bg0: #202020;
-    out property <color> bg1: #2b2b2b;
-    out property <color> bg2: #605e5c;
-    out property <color> bg3: #ded8d2;
-
-    out property <color> blue: #60cdff;
-    out property <color> green: #10893E;
-    out property <color> red: #E81123;
-
-    out property <color> text-light: #c8c8c8;
-}
-
+import {Palette} from "palette.slint";
 
 component ImageViewer inherits Rectangle{
     in property <image> image;
             
-            width: 512px;
-            height: 512px;
-            background: Palette.bg1;
-            border-radius: 7px;
-        
-            Image {
-                source: image;
-                image-fit: contain;
-                width: parent.width * 0.95;
-                height: parent.height * 0.95;
-            }
+    width: 512px;
+    height: 512px;
+    background: Palette.bg1;
+    border-radius: 7px;
+
+    Image {
+        source: image;
+        image-fit: contain;
+        width: parent.width * 0.95;
+        height: parent.height * 0.95;
+    }
 }
 
-component ImageTile inherits Rectangle {
+component CarouselTile inherits Rectangle {
 
     in property <bool> selected;
     in property <image> preview_smol;
@@ -40,29 +27,52 @@ component ImageTile inherits Rectangle {
     background: Palette.bg1;
     border-radius: 7px;
     height: 128px;
+    
 
     TouchArea {
-        clicked => {Logic.clickedImageTile(id)}
+        clicked => {Logic.clickedCarouselTile(id)}
+        
         VerticalLayout {
-            Image {
-                source: preview_smol;
-                image-fit: contain;
-                width: parent.width * 0.95;
-                height: parent.height * 0.95;
+            spacing: 2px;
+
+            Rectangle {
+                width: parent.width;
+                height: 115px;
+                Image {
+                    source: preview_smol;
+                    image-fit: contain;
+                    width: parent.width;
+                    height: parent.height;
+                }
             }
+            
             Rectangle {
                 width: parent.width;
                 height: 16px;
                 border-radius: 7px;
-                border-width: 1px;
-                border-color: selected ? Palette.bg2 : Palette.bg3;
+                //border-color: selected ? Palette.bg2 : Palette.bg3;
                 background: Palette.bg2;
+
+                Rectangle {
+                    width: parent.width;
+                    height: 8px;
+                    y: 0px;
+                    background: parent.background;
+                }
     
                 Text {
                     horizontal-alignment: center;
                     text: image_name;
                 }
             }   
+        }
+        Selection_Indicator := Rectangle {
+            height: 0.65*parent.height;
+            width: 4px;
+            x: -2px;
+
+            background: selected ? Palette.bg1 : Palette.blue;
+            border-radius: 2px;
         }
     }   
 }
@@ -158,7 +168,7 @@ export component AppWindow inherits Window {
             ScrollView {
                 viewport-width: parent.width * 0.9;
                 viewport-height: carousel_viewport_height * 1px;
-                for img_name[i] in carousel_image_names: ImageTile {
+                for img_name[i] in carousel_image_names: CarouselTile {
                     image_name: img_name;
                     preview_smol: carousel_images[i];
                     id: i;
@@ -234,6 +244,6 @@ export component AppWindow inherits Window {
 }
 
 export global Logic {
-    callback clickedImageTile(int);
+    callback clickedCarouselTile(int);
     callback updatedExifField(int, string);
 }

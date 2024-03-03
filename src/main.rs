@@ -57,7 +57,7 @@ fn main() -> Result<(), slint::PlatformError> {
     });
 
 
-    ui.global::<Logic>().on_clickedImageTile({
+    ui.global::<Logic>().on_clickedCarouselTile({
         let ui_handle = ui.as_weak();
         move |id|{
             let ui = ui_handle.unwrap();
