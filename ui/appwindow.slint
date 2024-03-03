@@ -1,11 +1,25 @@
 import { Button, VerticalBox, HorizontalBox, StandardListView, ScrollView, LineEdit } from "std-widgets.slint";
 
+export global Palette{
+    out property <color> bg0: #201f1e;
+    out property <color> bg1: #323130;
+    out property <color> bg2: #605e5c;
+    out property <color> bg3: #a19f9d;
+
+    out property <color> blue: #0078d4;
+    out property <color> green: #10893E;
+    out property <color> red: #E81123;
+
+    out property <color> text-light: #c8c8c8;
+}
+
+
 component ImageViewer inherits Rectangle{
     in property <image> image;
             
             width: 512px;
             height: 512px;
-            background: #202126;
+            background: Palette.bg1;
             border-radius: 7px;
         
             Image {
@@ -23,7 +37,7 @@ component ImageTile inherits Rectangle {
     in property <string> image_name;
     in-out property <int> id;
     
-    background: #202126;
+    background: Palette.bg1;
     border-radius: 7px;
     height: 128px;
 
@@ -40,7 +54,9 @@ component ImageTile inherits Rectangle {
                 width: parent.width;
                 height: 16px;
                 border-radius: 7px;
-                background: #4c4d57;
+                border-width: 1px;
+                border-color: selected ? Palette.bg2 : Palette.bg3;
+                background: Palette.bg2;
     
                 Text {
                     horizontal-alignment: center;
@@ -63,7 +79,7 @@ component ExifTile inherits Rectangle {
         width: parent.width;
         height: 100px;
         border-radius: 7px;
-        background: #202126;    
+        background: Palette.bg1;    
 
         VerticalLayout {
             padding-top: 12px;
@@ -77,10 +93,10 @@ component ExifTile inherits Rectangle {
                 font-weight: 400;
                 font-size: 14px;
                 horizontal-alignment: center;
-                color: #c8c8c8;
+                color: Palette.text-light;
                 text: set_text;
             }
-            LE := LineEdit {
+            LineEdit {
                 horizontal-alignment: center;
                 font-size: 16px;
                 accepted => {Logic.updatedExifField(tile_id, self.text); self.text = ""} 
@@ -120,7 +136,7 @@ export component AppWindow inherits Window {
 
     icon: icon_;
     title: "ExifEdit";
-
+    background: Palette.bg0;
     
     key-handler:= FocusScope{
         key-pressed(event) => {
@@ -129,6 +145,7 @@ export component AppWindow inherits Window {
         }
         
     HorizontalBox {
+        
         VerticalBox {
             width: 256px;
             Button {
@@ -146,6 +163,7 @@ export component AppWindow inherits Window {
                     preview_smol: carousel_images[i];
                     id: i;
                     y: 150px * i;
+                    selected: carousel_cur_selected == self.id ? false : true;
                 }
             }
         }

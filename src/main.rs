@@ -68,6 +68,7 @@ fn main() -> Result<(), slint::PlatformError> {
             println!("{}", DH.lock().unwrap().currently_selected);
             update_main_view(&ui);
             update_exif_tiles(&ui);
+            ui.set_carousel_cur_selected(DH.lock().unwrap().currently_selected as i32);
         }
     });
 
@@ -137,6 +138,7 @@ fn main() -> Result<(), slint::PlatformError> {
                     } else {
                         DH.lock().unwrap().currently_selected -= 1;
                     }
+                    ui.set_carousel_cur_selected(DH.lock().unwrap().currently_selected as i32);
                     update_main_view(&ui);
                 }
                 if key_event.text == SharedString::from(platform::Key::DownArrow) || 
@@ -146,6 +148,7 @@ fn main() -> Result<(), slint::PlatformError> {
                     } else {
                         DH.lock().unwrap().currently_selected += 1;
                     }
+                    ui.set_carousel_cur_selected(DH.lock().unwrap().currently_selected as i32);
                     update_main_view(&ui);
                 }         
             }

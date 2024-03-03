@@ -25,3 +25,6 @@ A very small gui that calls exiftool to edit metadata of analog pictures. Build 
 - Adding the Icon:
    - https://anthropicstudios.com/2021/01/05/setting-a-rust-windows-exe-icon/
    - https://stackoverflow.com/questions/50642574/how-can-i-specify-linker-flags-arguments-in-a-build-script
+
+- Colors (Fluent UI Palette):
+   - https://fluentuipr.z22.web.core.windows.net/heads/master/theming-designer/index.html
