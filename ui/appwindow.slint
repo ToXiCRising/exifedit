@@ -67,11 +67,18 @@ component CarouselTile inherits Rectangle {
             }   
         }
         Selection_Indicator := Rectangle {
-            height: 0.65*parent.height;
+            height: selected ? 0px : 0.65*parent.height;
+            animate height {
+                 duration: 75ms;
+            }
             width: 4px;
             x: -2px;
 
             background: selected ? Palette.bg1 : Palette.blue;
+            animate background {
+                 duration: 75ms;
+                 easing: ease-in-out;
+            }
             border-radius: 2px;
         }
     }   

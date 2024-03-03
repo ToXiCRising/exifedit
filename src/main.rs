@@ -62,9 +62,9 @@ fn main() -> Result<(), slint::PlatformError> {
         move |id|{
             let ui = ui_handle.unwrap();
 
-            //println!("clicked tile {id}");
             DH.lock().unwrap().currently_selected = id as usize;
-            println!("{}", DH.lock().unwrap().currently_selected);
+            //println!("clicked tile {id}");
+            //println!("{}", DH.lock().unwrap().currently_selected);
             update_main_view(&ui);
             update_exif_tiles(&ui);
             ui.set_carousel_cur_selected(DH.lock().unwrap().currently_selected as i32);
