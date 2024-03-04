@@ -1,6 +1,7 @@
 use native_dialog::FileDialog;
 use std::path::PathBuf;
-
+use image;
+use image::GenericImageView;
 
 pub fn open_file_selector() -> Vec<PathBuf> {
     let paths = FileDialog::new()
@@ -20,15 +21,18 @@ pub fn open_file_selector() -> Vec<PathBuf> {
     return paths;
 }
 
-fn generate_previews(original_image_paths: Vec<PathBuf>) -> (Vec<PathBuf>, Vec<PathBuf>){
-    todo!("Generation of previews is not implemented yet");
+pub fn generate_previews(original_image_paths: &Vec<PathBuf>) -> Vec<PathBuf>{
+    //todo!("Generation of previews is not implemented yet");
     
-    let preview_image_med_paths: Vec<PathBuf> = vec![];
-    let preview_image_smol_paths: Vec<PathBuf> = vec![];
+    let preview_image_paths: Vec<PathBuf> = vec![];
 
     for image in original_image_paths.iter(){
-
+        let img = image::open(image).unwrap();
+        let out_path = "temp_".to_string() + image.file_name().unwrap().to_str().unwrap();
+        println!("dimensions {:?}", img.dimensions());
+        let img_smol = img.resize(512, 512, image::imageops::Nearest);
+        img_smol.save("test.png").unwrap();
     }
 
-    return (preview_image_med_paths, preview_image_smol_paths);
+    return preview_image_paths;
 }
