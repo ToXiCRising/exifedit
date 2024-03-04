@@ -5,7 +5,7 @@ mod type_conversion;
 mod data_handler;
 mod standard_values;
 
-use std::process::Command;
+use std::{fs::remove_dir_all, process::Command};
 use std::sync::Mutex;
 use lazy_static::lazy_static;
 use slint::{Image, SharedString, platform};
@@ -159,7 +159,8 @@ fn main() -> Result<(), slint::PlatformError> {
     // ------ cleanup ------
     ui.window().on_close_requested(move || {
         println!("Cleaning up!");
-        
+        //EVIIIILLLLL!!!!! aber ich weis auch momentan net wie besser.....
+        let _res = remove_dir_all("exif_previews");
         return slint::CloseRequestResponse::HideWindow;
     });
 
