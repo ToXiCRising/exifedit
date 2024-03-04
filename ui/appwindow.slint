@@ -128,6 +128,7 @@ export component AppWindow inherits Window {
     callback openFileSelector;
     callback writeExifData;
     callback keyPressed(KeyEvent);
+    forward-focus: key-handler;
 
     in property <image> icon_;
 
@@ -147,106 +148,102 @@ export component AppWindow inherits Window {
     in property <string> exif_shutter_speed;
     in property <int> exif_selected;
 
-
-    forward-focus: key-handler;
-    
-
     icon: icon_;
     title: "ExifEdit";
     background: Palette.bg0;
     
-    key-handler:= FocusScope{
+    key-handler := FocusScope {
         key-pressed(event) => {
             keyPressed(event);
             accept;
         }
         
-    HorizontalBox {
-        
-        VerticalBox {
-            width: 256px;
-            Button {
-                height: 32px;
-                
-                text: "Open File Selector";
-                clicked => {root.openFileSelector();}
-            }
-            
-            ScrollView {
-                viewport-width: parent.width * 0.9;
-                viewport-height: carousel_viewport_height * 1px;
-                for img_name[i] in carousel_image_names: CarouselTile {
-                    image_name: img_name;
-                    preview_smol: carousel_images[i];
-                    id: i;
-                    y: 150px * i;
-                    selected: carousel_cur_selected == self.id ? false : true;
+        HorizontalBox {
+
+            Carousel := VerticalBox {
+                width: 256px;
+                Button {
+                    height: 32px;
+
+                    text: "Open File Selector";
+                    clicked => {root.openFileSelector();}
                 }
-            }
-        }
 
-        VerticalBox {   
-            ImageViewer {
-                image: preview_image;
-            }
-            Text {
-                text: current_image_exif;
-            }
-        }
-
-        VerticalBox {
-            width: 256px;
-            Button {
-                height: 32px;
-                
-                text: "Write EXIF Data";
-                clicked => {root.writeExifData();}
+                ScrollView {
+                    viewport-width: parent.width * 0.9;
+                    viewport-height: carousel_viewport_height * 1px;
+                    for img_name[i] in carousel_image_names: CarouselTile {
+                        image_name: img_name;
+                        preview_smol: carousel_images[i];
+                        id: i;
+                        y: 150px * i;
+                        selected: carousel_cur_selected == self.id ? false : true;
+                    }
+                }
             }
 
-            ScrollView {
-                viewport-width: parent.width * 0.9;
-                viewport-height: 768px;
-                property <int> spacing: 120;
-                ExifTile {
-                    field_name: "Camera:";    
-                    set_text: exif_camera;
-                    tile_id: 0;
-                    y: (-325 + self.tile_id * spacing)* 1px;    
-                    
+            ImagePreview := VerticalBox {   
+                ImageViewer {
+                    image: preview_image;
                 }
-                ExifTile {
-                    field_name: "Lens:";
-                    set_text: exif_lens;
-                    tile_id: 1;
-                    y: (-325 + self.tile_id * spacing)* 1px;
+                Text {
+                    text: current_image_exif;
                 }
-                ExifTile {
-                    field_name: "Focal Length:";
-                    set_text: exif_focal_length;
-                    tile_id: 2;
-                    y: (-325 + self.tile_id * spacing)* 1px;
+            }
+
+            ExifTiles := VerticalBox {
+                width: 256px;
+                Button {
+                    height: 32px;
+
+                    text: "Write EXIF Data";
+                    clicked => {root.writeExifData();}
                 }
-                ExifTile {
-                    field_name: "ISO/ASA:";
-                    set_text: exif_iso;
-                    tile_id: 3;
-                    y: (-325 + self.tile_id * spacing)* 1px;
-                }
-                ExifTile {
-                    field_name: "Aperture:";
-                    set_text: exif_aperture;
-                    tile_id: 4;
-                    y: (-325 + self.tile_id * spacing)* 1px;
-                }
-                ExifTile {
-                    field_name: "Shutter Speed:";           
-                    set_text: exif_shutter_speed;
-                    tile_id: 5;
-                    y: (-325 + self.tile_id * spacing)* 1px;
-                }
-            }  
+
+                ScrollView {
+                    viewport-width: parent.width * 0.9;
+                    viewport-height: 768px;
+                    property <int> spacing: 120;
+                    ExifTile {
+                        field_name: "Camera:";    
+                        set_text: exif_camera;
+                        tile_id: 0;
+                        y: (-325 + self.tile_id * spacing)* 1px;    
+
+                    }
+                    ExifTile {
+                        field_name: "Lens:";
+                        set_text: exif_lens;
+                        tile_id: 1;
+                        y: (-325 + self.tile_id * spacing)* 1px;
+                    }
+                    ExifTile {
+                        field_name: "Focal Length:";
+                        set_text: exif_focal_length;
+                        tile_id: 2;
+                        y: (-325 + self.tile_id * spacing)* 1px;
+                    }
+                    ExifTile {
+                        field_name: "ISO/ASA:";
+                        set_text: exif_iso;
+                        tile_id: 3;
+                        y: (-325 + self.tile_id * spacing)* 1px;
+                    }
+                    ExifTile {
+                        field_name: "Aperture:";
+                        set_text: exif_aperture;
+                        tile_id: 4;
+                        y: (-325 + self.tile_id * spacing)* 1px;
+                    }
+                    ExifTile {
+                        field_name: "Shutter Speed:";           
+                        set_text: exif_shutter_speed;
+                        tile_id: 5;
+                        y: (-325 + self.tile_id * spacing)* 1px;
+                    }
+                }  
+            }
         }
-    }
     }  
 }
 
