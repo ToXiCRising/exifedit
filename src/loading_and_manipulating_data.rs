@@ -25,7 +25,7 @@ pub fn open_file_selector() -> Vec<PathBuf> {
 pub fn generate_previews(original_image_paths: &Vec<PathBuf>) -> Vec<PathBuf>{
     //todo!("Generation of previews is not implemented yet");
     
-    let preview_image_paths: Vec<PathBuf> = vec![];
+    let mut preview_image_paths: Vec<PathBuf> = vec![];
     let preview_dir = "exif_previews";
 
     let _res = create_dir(preview_dir).unwrap_or_else(|error| {
@@ -43,6 +43,7 @@ pub fn generate_previews(original_image_paths: &Vec<PathBuf>) -> Vec<PathBuf>{
         let img_smol = img.resize(512, 512, image::imageops::Nearest);
         
         img_smol.save(out_path).unwrap();
+        preview_image_paths.append(&mut vec![out_path.to_path_buf()]);
     }
 
     return preview_image_paths;
