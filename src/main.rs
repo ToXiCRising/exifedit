@@ -50,7 +50,9 @@ fn main() -> Result<(), slint::PlatformError> {
         move || {
             let ui = ui_handle.unwrap();
 
-            DH.lock().unwrap().add_new_images(&mut loading_and_manipulating_data::open_file_selector());
+            let mut new_images = loading_and_manipulating_data::open_file_selector();
+            loading_and_manipulating_data::generate_previews(&new_images);
+            DH.lock().unwrap().add_new_images(&mut new_images);
             update_main_view(&ui);
             update_carousel(&ui);     
         }
@@ -154,6 +156,12 @@ fn main() -> Result<(), slint::PlatformError> {
         }
     });
 
+    // ------ cleanup ------
+    ui.window().on_close_requested(move || {
+        println!("Cleaning up!");
+        
+        return slint::CloseRequestResponse::HideWindow;
+    });
 
     ui.run()
 }
