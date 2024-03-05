@@ -13,7 +13,7 @@ A very small gui that calls exiftool to edit metadata of analog pictures. Build 
 - [ ] dynamic exif tile system
 
 - [ ] loading bar? 
-- [ ] implement image compression or better caching to optimize responsivenes
+- [x] implement image compression or better caching to optimize responsivenes
 
 # Bugfixes
 - [x] Crashes if you exit out of the file selector dialog

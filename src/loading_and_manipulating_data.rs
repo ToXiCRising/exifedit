@@ -15,15 +15,16 @@ pub fn open_file_selector() -> Vec<PathBuf> {
     });
     
 
+    println!("Selected files:");
     for path in paths.iter(){
-        println!("{}", path.display());
+        println!("\t- {}", path.display());
     }
 
     return paths;
 }
 
 pub fn generate_previews(original_image_paths: &Vec<PathBuf>) -> Vec<PathBuf>{
-    //todo!("Generation of previews is not implemented yet");
+    //TODO: Multithread that sucker?
     
     println!("\nGenerating Previews!");
 
@@ -40,15 +41,13 @@ pub fn generate_previews(original_image_paths: &Vec<PathBuf>) -> Vec<PathBuf>{
         let temp_name = preview_dir.to_string() + "/temp_" + image.file_name().unwrap().to_str().unwrap();
         let out_path = Path::new(&temp_name);
         
-        println!("original dimensions: {:?}", img.dimensions());
-        println!("preview file: {:?}", out_path);
+        println!("\toriginal dimensions: {:?}", img.dimensions());
+        println!("\tpreview file: {:?}", out_path);
         let img_smol = img.resize(512, 512, image::imageops::Nearest);
         
         img_smol.save(out_path).unwrap();
         preview_image_paths.append(&mut vec![out_path.to_path_buf()]);
     }
-
-    println!("");
 
     return preview_image_paths;
 }

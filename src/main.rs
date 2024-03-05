@@ -159,8 +159,7 @@ fn main() -> Result<(), slint::PlatformError> {
 
     // ------ cleanup ------
     ui.window().on_close_requested(move || {
-        println!("Cleaning up!");
-        //EVIIIILLLLL!!!!! aber ich weis auch momentan net wie besser.....
+        println!("\nCleaning up!");
         let previews = &DH.lock().unwrap().preview_paths;
         for preview in previews {
             let _res_file = remove_file(preview);
