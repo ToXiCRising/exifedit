@@ -5,7 +5,7 @@ mod type_conversion;
 mod data_handler;
 mod standard_values;
 
-use std::{fs::remove_dir_all, process::Command};
+use std::{fs::remove_dir, fs::remove_file, process::Command};
 use std::sync::Mutex;
 use lazy_static::lazy_static;
 use slint::{Image, SharedString, platform};
@@ -16,6 +16,7 @@ lazy_static! {
     static ref DH: Mutex<DataHandler> = Mutex::new(DataHandler{
         currently_selected: 0,
         image_paths: vec![],
+        preview_paths: vec![],
 
         camera_names: vec![],
         lens_names: vec![],
@@ -51,8 +52,8 @@ fn main() -> Result<(), slint::PlatformError> {
             let ui = ui_handle.unwrap();
 
             let mut new_images = loading_and_manipulating_data::open_file_selector();
-            loading_and_manipulating_data::generate_previews(&new_images);
-            DH.lock().unwrap().add_new_images(&mut new_images);
+            let mut new_previews = loading_and_manipulating_data::generate_previews(&new_images);
+            DH.lock().unwrap().add_new_images(&mut new_images, &mut new_previews);
             update_main_view(&ui);
             update_carousel(&ui);     
         }
@@ -160,7 +161,11 @@ fn main() -> Result<(), slint::PlatformError> {
     ui.window().on_close_requested(move || {
         println!("Cleaning up!");
         //EVIIIILLLLL!!!!! aber ich weis auch momentan net wie besser.....
-        let _res = remove_dir_all("exif_previews");
+        let previews = &DH.lock().unwrap().preview_paths;
+        for preview in previews {
+            let _res_file = remove_file(preview);
+        }
+        let _res_dir = remove_dir("exif_previews");
         return slint::CloseRequestResponse::HideWindow;
     });
 
@@ -175,7 +180,7 @@ fn update_main_view(ui: &AppWindow){
     }
 
     let cur = DH.lock().unwrap().currently_selected;
-    let cur_path = &DH.lock().unwrap().image_paths[cur];
+    let cur_path = &DH.lock().unwrap().preview_paths[cur];
     let cur_selected = Image::load_from_path(&cur_path);
     ui.set_preview_image(
         cur_selected.unwrap()
@@ -188,7 +193,7 @@ fn update_carousel(ui: &AppWindow){
     );
 
     ui.set_carousel_images(
-        type_conversion::images_to_model(DH.lock().unwrap().image_paths.to_vec())
+        type_conversion::images_to_model(DH.lock().unwrap().preview_paths.to_vec())
     );
 
     ui.set_carousel_viewport_height(DH.lock().unwrap().image_paths.len() as i32 * 150);

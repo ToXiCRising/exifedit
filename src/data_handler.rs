@@ -5,6 +5,7 @@ use std::path::PathBuf;
 #[derive(Clone, Debug)]
 pub struct DataHandler {
     pub image_paths: Vec<PathBuf>,
+    pub preview_paths: Vec<PathBuf>,
     pub currently_selected: usize,
 
     pub camera_names: Vec<String>,
@@ -16,7 +17,7 @@ pub struct DataHandler {
 }
 
 impl DataHandler {
-    pub fn add_new_images(&mut self, new_image_paths: &mut Vec<PathBuf>) {
+    pub fn add_new_images(&mut self, new_image_paths: &mut Vec<PathBuf>, new_previews_paths: &mut Vec<PathBuf>) {
         let new_images_count: usize = new_image_paths.len();
 
         if new_images_count == 0 {
@@ -24,6 +25,7 @@ impl DataHandler {
         }
 
         self.image_paths.append(new_image_paths); 
+        self.preview_paths.append(new_previews_paths);
         
         for _i in  0..new_images_count{
             //println!("Appending Stuff");
