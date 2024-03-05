@@ -6,6 +6,10 @@
 
 A very small gui that calls exiftool to edit metadata of analog pictures. Build with Rust and Slint. Currently only tested in Windows 10 and requires exiftool to be placed in PATH.
 
+<p align="center">
+  <img src="recources\ui_preview.jpg", width=500>
+</p>
+
 # Future Features and Ideas
 - [ ] Color coding of carousel titles based on selection, and if writing of data was succesful
 - [ ] a way to remove pictures from current session
