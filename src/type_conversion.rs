@@ -35,6 +35,14 @@ pub fn images_to_model(paths: Vec<PathBuf>) -> slint::ModelRc<Image>{
     return slint::ModelRc::new(slint::VecModel::from(out));
 }
 
+pub fn string_to_model(strings: Vec<String>) -> slint::ModelRc<slint::SharedString> {
+    let mut out: Vec<slint::SharedString> = vec![];
+    for s in strings {
+        out.push(slint::SharedString::from(s));
+    }
+    return slint::ModelRc::new(slint::VecModel::from(out));
+}
+
 pub fn split_camera_name(camera_name: String) -> (String, String){
     let it = camera_name.split_whitespace();
 

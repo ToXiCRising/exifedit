@@ -140,13 +140,17 @@ export component AppWindow inherits Window {
     in property <int> carousel_viewport_height;
     in property <int> carousel_cur_selected;
 
-    in property <string> exif_camera;
-    in property <string> exif_lens;
-    in property <string> exif_focal_length;
-    in property <string> exif_iso;
-    in property <string> exif_aperture;
-    in property <string> exif_shutter_speed;
+    //in property <string> exif_camera;
+    //in property <string> exif_lens;
+    //in property <string> exif_focal_length;
+    //in property <string> exif_iso;
+    //in property <string> exif_aperture;
+    //in property <string> exif_shutter_speed;
+
+    in property <[string]> exif_tiles;
+    in property <[string]> exif_defaults;
     in property <int> exif_selected;
+    in property <int> exif_viewport_height;
 
     icon: icon_;
     title: "ExifEdit";
@@ -202,8 +206,17 @@ export component AppWindow inherits Window {
 
                 ScrollView {
                     viewport-width: parent.width * 0.9;
-                    viewport-height: 768px;
+                    viewport-height: exif_viewport_height * 1px;
                     property <int> spacing: 120;
+
+                    for exif_tile_name[i] in exif_tiles: ExifTile {
+                        field_name: exif_tile_name;
+                        set_text: exif_defaults[i];
+                        tile_id: i;
+                        y: (i * spacing - 60) * 1px;
+                    }
+
+                    /*
                     ExifTile {
                         field_name: "Camera:";    
                         set_text: exif_camera;
@@ -241,6 +254,7 @@ export component AppWindow inherits Window {
                         tile_id: 5;
                         y: (-325 + self.tile_id * spacing)* 1px;
                     }
+                    */
                 }  
             }
         }

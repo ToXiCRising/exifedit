@@ -37,8 +37,14 @@ impl DataHandler {
             ni.insert("ID".to_string(), (self.images.len() + i).to_string());
             ni.insert("original_path".to_string(),  new_image_paths[i].to_str().unwrap().to_string());
             ni.insert("preview_path".to_string(), new_previews_paths[i].to_str().unwrap().to_string());
+            //TODO: dont just add but also remove tags
             self.images.push(ni);
         }
+    }
+
+    pub fn remove_image(id: String) {
+        //TODO
+        todo!("Implement this sucker")
     }
 
     pub fn get_noi(&mut self) -> usize{
@@ -81,22 +87,9 @@ pub fn create_image() -> HashMap<String, String> {
     return image;
 }
 
-pub fn remove_image(id: String) {
-    //TODO
-    todo!("Implement this sucker")
-}
-
-fn updated_image_tags(image: &mut HashMap<String, String>, tag_store: &Vec<tag_store::Tag>) {
-    for tag in tag_store.iter() {
-        if !image.contains_key(&tag.tag_name){
-            image.insert(tag.tag_name.clone(), tag.default_value.clone());
-        }
-    }
-    //TODO: dont just add but also remove tags
-}
 
 pub fn print_image_tags(image: &HashMap<String, String>){
-    for key in image.keys(){ 
-        println!("{key}");
+    for key in image { 
+        println!("{:?}", key);
     }
 }

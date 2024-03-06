@@ -18,6 +18,11 @@ pub fn create_default_tag_store() -> Vec<Tag> {
         default_value: standard_values::MODEL_DEFAULT.to_string(),
         exif_arg: "-model=\"xxx\"".to_string(),
     });
+    tag_store.push(Tag{
+        tag_name: "Focal Length".to_string(),
+        default_value: standard_values::FOCAL_LENGTH.to_string(),
+        exif_arg: "-focallength=xxx".to_string(),
+    });
 
 
     return tag_store;
