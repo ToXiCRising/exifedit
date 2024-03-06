@@ -6,7 +6,7 @@ use crate::tag_store;
 
 #[derive(Clone, Debug)]
 pub struct DataHandler {
-    pub currently_selcted: usize,
+    pub currently_selected: usize,
     pub images: Vec<HashMap<String, String>>
 }
 
@@ -43,6 +43,22 @@ impl DataHandler {
 
     pub fn get_noi(&mut self) -> usize{
         return self.images.len();
+    }
+
+    pub fn get_image_paths(&mut self) -> Vec<PathBuf> {
+        let mut image_paths: Vec<PathBuf> = vec![];
+        for image in &self.images{
+            image_paths.push(PathBuf::from(&image["original_path"]));
+        }
+        return image_paths;
+    }
+
+    pub fn get_preview_paths(&mut self) -> Vec<PathBuf> {
+        let mut preview_paths: Vec<PathBuf> = vec![];
+        for image in &self.images{
+            preview_paths.push(PathBuf::from(&image["preview_path"]));
+        }
+        return preview_paths;
     }
     
 }

@@ -40,7 +40,7 @@ fn main() -> Result<(), slint::PlatformError> {
 
     let tag_store = Mutex::new(tag_store::create_default_tag_store());
     let data_handler = Mutex::new(image_database::DataHandler{
-        currently_selcted: 0,
+        currently_selected: 0,
         images: image_database::create_image_handler(),
     });
     //Removes the temporary entry that gets created upon creating the image_database
@@ -104,12 +104,12 @@ fn main() -> Result<(), slint::PlatformError> {
         move |id|{
             let ui = ui_handle.unwrap();
 
-            DH.lock().unwrap().currently_selected = id as usize;
+            data_handler.lock().unwrap().currently_selected = id as usize;
             //println!("clicked tile {id}");
             //println!("{}", DH.lock().unwrap().currently_selected);
             update_main_view(&ui, &data_handler);
-            update_exif_tiles(&ui);
-            ui.set_carousel_cur_selected(DH.lock().unwrap().currently_selected as i32);
+            //update_exif_tiles(&ui);
+            ui.set_carousel_cur_selected(data_handler.lock().unwrap().currently_selected as i32);
         }
     });
 
@@ -198,14 +198,17 @@ fn main() -> Result<(), slint::PlatformError> {
     });
 
     // ------ cleanup ------
-    ui.window().on_close_requested(move || {
-        println!("\nCleaning up!");
-        let previews = &DH.lock().unwrap().preview_paths;
-        for preview in previews {
-            let _res_file = remove_file(preview);
-        }
-        let _res_dir = remove_dir("exif_previews");
-        return slint::CloseRequestResponse::HideWindow;
+    ui.window().on_close_requested({
+        let data_handler = Arc::clone(&dh_handle);
+        move || {
+            println!("\nCleaning up!");
+            let previews = data_handler.lock().unwrap().get_preview_paths();
+            for preview in previews {
+                let _res_file = remove_file(preview);
+            }
+            let _res_dir = remove_dir("exif_previews");
+            return slint::CloseRequestResponse::HideWindow;
+        } 
     });
 
     ui.run()
@@ -218,7 +221,7 @@ fn update_main_view(ui: &AppWindow, data_handler: &Mutex<image_database::DataHan
         return;
     }
     
-    let cur = data_handler.lock().unwrap().currently_selcted;
+    let cur = data_handler.lock().unwrap().currently_selected;
     for tags in &data_handler.lock().unwrap().images[cur] {
         println!("{:?}", &tags);
     }
@@ -230,23 +233,17 @@ fn update_main_view(ui: &AppWindow, data_handler: &Mutex<image_database::DataHan
 }
 
 fn update_carousel(ui: &AppWindow, data_handler: &Mutex<image_database::DataHandler>){
-    let mut image_paths: Vec<PathBuf> = vec![];
-    let mut preview_paths: Vec<PathBuf> = vec![];
-    for image in &data_handler.lock().unwrap().images {
-        image_paths.push(PathBuf::from(&image["original_path"]));
-        preview_paths.push(PathBuf::from(&image["preview_path"]));
-    }
 
     ui.set_carousel_image_names(
-        type_conversion::paths_to_model(image_paths)    //dh.image_paths.to_vec()
+        type_conversion::paths_to_model(data_handler.lock().unwrap().get_image_paths())    //dh.image_paths.to_vec()
     );
 
     ui.set_carousel_images(
-        type_conversion::images_to_model(preview_paths)
+        type_conversion::images_to_model(data_handler.lock().unwrap().get_preview_paths())
     );
 
     ui.set_carousel_viewport_height(data_handler.lock().unwrap().get_noi() as i32 * 150);
-    ui.set_carousel_cur_selected(data_handler.lock().unwrap().currently_selcted as i32);
+    ui.set_carousel_cur_selected(data_handler.lock().unwrap().currently_selected as i32);
 }
 
 fn update_exif_tiles(ui: &AppWindow){
