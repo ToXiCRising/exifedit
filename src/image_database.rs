@@ -1,8 +1,10 @@
 use std::collections::HashMap;
 use std::sync::Mutex;
+use std::path::PathBuf;
 
 use crate::tag_store;
 
+#[derive(Clone, Debug)]
 pub struct DataHandler {
     pub currently_selcted: usize,
     pub images: Vec<HashMap<String, String>>
@@ -11,7 +13,7 @@ pub struct DataHandler {
 impl DataHandler {
 
     /// Iterates through all
-    pub fn update_data_handler(&mut self, tag_store: &Mutex<Vec<tag_store::Tag>>) {
+    pub fn update_data_handler_tags(&mut self, tag_store: &Mutex<Vec<tag_store::Tag>>) {
         let cur_tags = tag_store.lock().unwrap();
         for image in &mut self.images{
             for tag in cur_tags.iter() {
@@ -19,6 +21,23 @@ impl DataHandler {
                     image.insert(tag.tag_name.clone(), tag.default_value.clone());
                 }
             }
+        }
+    }
+
+    pub fn add_new_images(&mut self, new_image_paths: &mut Vec<PathBuf>, new_previews_paths: &mut Vec<PathBuf>) {
+        let new_images_count: usize = new_image_paths.len();
+
+        if new_images_count == 0 {
+            return;
+        }
+
+        for i in 0..new_image_paths.len(){
+            let mut ni = create_image();
+            //so ne id zu vergegbn funktioniert nicht wenn jemals bilder entfernt werden sollen
+            ni.insert("ID".to_string(), (self.images.len() + i).to_string());
+            ni.insert("original_path".to_string(),  new_image_paths[i].to_str().unwrap().to_string());
+            ni.insert("preview_path".to_string(), new_previews_paths[i].to_str().unwrap().to_string());
+            self.images.push(ni);
         }
     }
 

@@ -1,4 +1,4 @@
-
+use crate::standard_values;
 pub struct Tag {
     pub tag_name: String,
     pub default_value: String,
@@ -10,12 +10,12 @@ pub fn create_default_tag_store() -> Vec<Tag> {
 
     tag_store.push(Tag{
         tag_name: "Manufacturer".to_string(),
-        default_value: "DEFAULT".to_string(),
+        default_value: standard_values::MANUFACTURER_DEFAULT.to_string(),
         exif_arg: "-make=\"xxx\"".to_string(),
     });
     tag_store.push(Tag{
         tag_name: "Lens".to_string(),
-        default_value: "DEFAULT".to_string(),
+        default_value: standard_values::MODEL_DEFAULT.to_string(),
         exif_arg: "-model=\"xxx\"".to_string(),
     });
 

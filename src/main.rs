@@ -7,10 +7,13 @@ mod standard_values;
 mod tag_store;
 mod image_database;
 
+use std::borrow::Borrow;
 use std::collections::HashMap;
 use std::fs::{remove_dir, remove_file};
+use std::path::PathBuf;
 use std::process::Command;
-use std::sync::Mutex;
+use std::rc::Rc;
+use std::sync::{Arc, Mutex};
 use lazy_static::lazy_static;
 use slint::{Image, SharedString, platform};
 use data_handler::DataHandler;
@@ -40,19 +43,25 @@ fn main() -> Result<(), slint::PlatformError> {
         currently_selcted: 0,
         images: image_database::create_image_handler(),
     });
-    data_handler.lock().unwrap().images.push(image_database::create_image());
-    data_handler.lock().unwrap().update_data_handler(&tag_store);
+    //Removes the temporary entry that gets created upon creating the image_database
+    data_handler.lock().unwrap().images.pop();
 
-    image_database::print_image_tags(&data_handler.lock().unwrap().images[0]);
-
-
-    let arg = tag_store.lock().unwrap()[0].exif_arg.clone();
-    let tag_name = &tag_store.lock().unwrap()[0].tag_name.clone();
-    println!("{tag_name}");
-    println!("{}", data_handler.lock().unwrap().images[0][tag_name]);
     
+    //data_handler.lock().unwrap().images.push(image_database::create_image());
+    
+    //image_database::print_image_tags(&data_handler.lock().unwrap().images[0]);
+    //data_handler.lock().unwrap().update_data_handler_tags(&tag_store);
+    
+    
+    //let arg = tag_store.lock().unwrap()[0].exif_arg.clone();
+    //let tag_name = &tag_store.lock().unwrap()[0].tag_name.clone();
+    //println!("{tag_name}");
+    //println!("{}", data_handler.lock().unwrap().images[0][tag_name]);
+    
+    let ts_handle = Arc::new(tag_store);
+    let dh_handle = Arc::new(data_handler);
     //println!("{}", arg.replace("xxx", &data_handler.lock().unwrap().images[0][tag_name]));
-    panic!("Stop right there, CRIMINAL SCUM!");
+   
 
     let ui = AppWindow::new()?;
 
@@ -74,13 +83,20 @@ fn main() -> Result<(), slint::PlatformError> {
 
     ui.on_openFileSelector({ 
         let ui_handle = ui.as_weak();
+        let data_handler = Arc::clone(&dh_handle);
+        let tag_store = Arc::clone(&ts_handle);
         move || {
             let ui = ui_handle.unwrap();
 
             let mut new_images = loading_and_manipulating_data::open_file_selector();
             let mut new_previews = loading_and_manipulating_data::generate_previews(&new_images);
-            DH.lock().unwrap().add_new_images(&mut new_images, &mut new_previews);
-            update_main_view(&ui);
+            data_handler.lock().unwrap().add_new_images(&mut new_images, &mut new_previews);
+            for tags in &data_handler.lock().unwrap().images[0] {
+                println!("open: {:?}", &tags);
+            }
+            println!("{}", &data_handler.lock().unwrap().get_noi());
+            data_handler.lock().unwrap().update_data_handler_tags(&tag_store);
+            update_main_view(&ui, &data_handler);
             update_carousel(&ui);     
         }
     });
@@ -88,13 +104,14 @@ fn main() -> Result<(), slint::PlatformError> {
 
     ui.global::<Logic>().on_clickedCarouselTile({
         let ui_handle = ui.as_weak();
+        let data_handler = Arc::clone(&dh_handle);
         move |id|{
             let ui = ui_handle.unwrap();
 
             DH.lock().unwrap().currently_selected = id as usize;
             //println!("clicked tile {id}");
             //println!("{}", DH.lock().unwrap().currently_selected);
-            update_main_view(&ui);
+            update_main_view(&ui, &data_handler);
             update_exif_tiles(&ui);
             ui.set_carousel_cur_selected(DH.lock().unwrap().currently_selected as i32);
         }
@@ -142,6 +159,7 @@ fn main() -> Result<(), slint::PlatformError> {
     // ------ handles key-based navigation ------
     ui.on_keyPressed({
         let ui_handle = ui.as_weak();
+        let data_handler = Arc::clone(&dh_handle);
         move |key_event| {
             let ui = ui_handle.unwrap();
             let num_images = DH.lock().unwrap().get_noi();
@@ -167,7 +185,7 @@ fn main() -> Result<(), slint::PlatformError> {
                         DH.lock().unwrap().currently_selected -= 1;
                     }
                     ui.set_carousel_cur_selected(DH.lock().unwrap().currently_selected as i32);
-                    update_main_view(&ui);
+                    update_main_view(&ui, &data_handler);
                 }
                 if key_event.text == SharedString::from(platform::Key::DownArrow) || 
                    key_event.text == SharedString::from(platform::Key::RightArrow) {
@@ -177,7 +195,7 @@ fn main() -> Result<(), slint::PlatformError> {
                         DH.lock().unwrap().currently_selected += 1;
                     }
                     ui.set_carousel_cur_selected(DH.lock().unwrap().currently_selected as i32);
-                    update_main_view(&ui);
+                    update_main_view(&ui, &data_handler);
                 }         
             }
         }
@@ -197,15 +215,18 @@ fn main() -> Result<(), slint::PlatformError> {
     ui.run()
 }
 
-fn update_main_view(ui: &AppWindow){
+fn update_main_view(ui: &AppWindow, data_handler: &Mutex<image_database::DataHandler>){
     //Updates main Preview
 
-    if DH.lock().unwrap().get_noi() == 0 {
+    if data_handler.lock().unwrap().get_noi() == 0 {
         return;
     }
-
-    let cur = DH.lock().unwrap().currently_selected;
-    let cur_path = &DH.lock().unwrap().preview_paths[cur];
+    
+    let cur = data_handler.lock().unwrap().currently_selcted;
+    for tags in &data_handler.lock().unwrap().images[cur] {
+        println!("{:?}", &tags);
+    }
+    let cur_path = PathBuf::from(&data_handler.lock().unwrap().images[cur]["preview_path"]);
     let cur_selected = Image::load_from_path(&cur_path);
     ui.set_preview_image(
         cur_selected.unwrap()
