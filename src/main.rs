@@ -46,7 +46,7 @@ fn main() -> Result<(), slint::PlatformError> {
     //Removes the temporary entry that gets created upon creating the image_database
     data_handler.lock().unwrap().images.pop();
 
-    
+
     //data_handler.lock().unwrap().images.push(image_database::create_image());
     
     //image_database::print_image_tags(&data_handler.lock().unwrap().images[0]);
@@ -91,13 +91,9 @@ fn main() -> Result<(), slint::PlatformError> {
             let mut new_images = loading_and_manipulating_data::open_file_selector();
             let mut new_previews = loading_and_manipulating_data::generate_previews(&new_images);
             data_handler.lock().unwrap().add_new_images(&mut new_images, &mut new_previews);
-            for tags in &data_handler.lock().unwrap().images[0] {
-                println!("open: {:?}", &tags);
-            }
-            println!("{}", &data_handler.lock().unwrap().get_noi());
             data_handler.lock().unwrap().update_data_handler_tags(&tag_store);
             update_main_view(&ui, &data_handler);
-            update_carousel(&ui);     
+            update_carousel(&ui, &data_handler);     
         }
     });
 
@@ -233,17 +229,24 @@ fn update_main_view(ui: &AppWindow, data_handler: &Mutex<image_database::DataHan
     );  
 }
 
-fn update_carousel(ui: &AppWindow){
+fn update_carousel(ui: &AppWindow, data_handler: &Mutex<image_database::DataHandler>){
+    let mut image_paths: Vec<PathBuf> = vec![];
+    let mut preview_paths: Vec<PathBuf> = vec![];
+    for image in &data_handler.lock().unwrap().images {
+        image_paths.push(PathBuf::from(&image["original_path"]));
+        preview_paths.push(PathBuf::from(&image["preview_path"]));
+    }
+
     ui.set_carousel_image_names(
-        type_conversion::paths_to_model(DH.lock().unwrap().image_paths.to_vec())    //dh.image_paths.to_vec()
+        type_conversion::paths_to_model(image_paths)    //dh.image_paths.to_vec()
     );
 
     ui.set_carousel_images(
-        type_conversion::images_to_model(DH.lock().unwrap().preview_paths.to_vec())
+        type_conversion::images_to_model(preview_paths)
     );
 
-    ui.set_carousel_viewport_height(DH.lock().unwrap().image_paths.len() as i32 * 150);
-    ui.set_carousel_cur_selected(DH.lock().unwrap().currently_selected as i32);
+    ui.set_carousel_viewport_height(data_handler.lock().unwrap().get_noi() as i32 * 150);
+    ui.set_carousel_cur_selected(data_handler.lock().unwrap().currently_selcted as i32);
 }
 
 fn update_exif_tiles(ui: &AppWindow){
