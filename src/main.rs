@@ -4,12 +4,18 @@ mod loading_and_manipulating_data;
 mod type_conversion;
 mod data_handler;
 mod standard_values;
+mod tag_store;
+mod image_database;
 
-use std::{fs::remove_dir, fs::remove_file, process::Command};
+use std::collections::HashMap;
+use std::fs::{remove_dir, remove_file};
+use std::process::Command;
 use std::sync::Mutex;
 use lazy_static::lazy_static;
 use slint::{Image, SharedString, platform};
 use data_handler::DataHandler;
+
+
 
 
 lazy_static! {
@@ -28,6 +34,26 @@ lazy_static! {
 }
 
 fn main() -> Result<(), slint::PlatformError> {
+
+    let tag_store = Mutex::new(tag_store::create_default_tag_store());
+    let data_handler = Mutex::new(image_database::DataHandler{
+        currently_selcted: 0,
+        images: image_database::create_image_handler(),
+    });
+    data_handler.lock().unwrap().images.push(image_database::create_image());
+    data_handler.lock().unwrap().update_data_handler(&tag_store);
+
+    image_database::print_image_tags(&data_handler.lock().unwrap().images[0]);
+
+
+    let arg = tag_store.lock().unwrap()[0].exif_arg.clone();
+    let tag_name = &tag_store.lock().unwrap()[0].tag_name.clone();
+    println!("{tag_name}");
+    println!("{}", data_handler.lock().unwrap().images[0][tag_name]);
+    
+    //println!("{}", arg.replace("xxx", &data_handler.lock().unwrap().images[0][tag_name]));
+    panic!("Stop right there, CRIMINAL SCUM!");
+
     let ui = AppWindow::new()?;
 
     //------ setting up icons and standard values ------
