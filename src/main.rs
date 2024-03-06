@@ -232,7 +232,7 @@ fn update_exif_tiles(ui: &AppWindow, data_handler: &Mutex<image_database::DataHa
     }
     
     
-    ui.set_exif_viewport_height(2 * 120);
+    ui.set_exif_viewport_height((&tag_store.lock().unwrap().len() * 120) as i32);
     ui.set_exif_tiles(type_conversion::string_to_model(tags));
     ui.set_exif_defaults(type_conversion::string_to_model(values));
 }

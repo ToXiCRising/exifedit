@@ -23,6 +23,22 @@ pub fn create_default_tag_store() -> Vec<Tag> {
         default_value: standard_values::FOCAL_LENGTH.to_string(),
         exif_arg: "-focallength=xxx".to_string(),
     });
+    tag_store.push(Tag{
+        tag_name: "ISO".to_string(),
+        default_value: standard_values::ISO_DEFAULT.to_string(),
+        exif_arg: "-iso=xxx".to_string(),
+    });
+    tag_store.push(Tag{
+        tag_name: "Aperture".to_string(),
+        default_value: standard_values::APERTURE_DEFAULT.to_string(),
+        exif_arg: "-aperturevalue=xxx -Fnumber=xxx".to_string(),
+    });
+    tag_store.push(Tag{
+        tag_name: "Shutter Speed".to_string(),
+        default_value: standard_values::SHUTTER_SPEED_DEFAULT.to_string(),
+        exif_arg: "-exposuretime=xxx".to_string(),
+    });
+
 
 
     return tag_store;

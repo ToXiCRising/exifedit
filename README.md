@@ -14,7 +14,7 @@ A very small gui that calls exiftool to edit metadata of analog pictures. Build 
 - [ ] Color coding of carousel titles based on selection, and if writing of data was succesful
 - [ ] a way to remove pictures from current session
 
-- [ ] dynamic exif tile system
+- [x] dynamic exif tile system
 
 - [ ] loading bar? 
 - [x] implement image compression or better caching to optimize responsivenes

@@ -213,7 +213,8 @@ export component AppWindow inherits Window {
                         field_name: exif_tile_name;
                         set_text: exif_defaults[i];
                         tile_id: i;
-                        y: (i * spacing - 60) * 1px;
+                        //wierd, handtuned offset is wierd
+                        y: (i * spacing - 300) * 1px;
                     }
                 }  
             }
