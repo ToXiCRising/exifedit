@@ -158,7 +158,7 @@ fn main() -> Result<(), slint::PlatformError> {
         let data_handler = Arc::clone(&dh_handle);
         move |key_event| {
             let ui = ui_handle.unwrap();
-            let num_images = DH.lock().unwrap().get_noi();
+            let num_images = data_handler.lock().unwrap().get_noi();
 
             if  num_images != 0 {
                 // Tabbing through exif-tiles
@@ -175,22 +175,22 @@ fn main() -> Result<(), slint::PlatformError> {
                 // Navigation through the carousel
                 if key_event.text == SharedString::from(platform::Key::UpArrow) || 
                    key_event.text == SharedString::from(platform::Key::LeftArrow) {
-                    if DH.lock().unwrap().currently_selected == 0 {
-                        DH.lock().unwrap().currently_selected = num_images - 1;
+                    if data_handler.lock().unwrap().currently_selected == 0 {
+                        data_handler.lock().unwrap().currently_selected = num_images - 1;
                     } else {
-                        DH.lock().unwrap().currently_selected -= 1;
+                        data_handler.lock().unwrap().currently_selected -= 1;
                     }
-                    ui.set_carousel_cur_selected(DH.lock().unwrap().currently_selected as i32);
+                    ui.set_carousel_cur_selected(data_handler.lock().unwrap().currently_selected as i32);
                     update_main_view(&ui, &data_handler);
                 }
                 if key_event.text == SharedString::from(platform::Key::DownArrow) || 
                    key_event.text == SharedString::from(platform::Key::RightArrow) {
-                    if DH.lock().unwrap().currently_selected == num_images - 1 {
-                        DH.lock().unwrap().currently_selected = 0;
+                    if data_handler.lock().unwrap().currently_selected == num_images - 1 {
+                        data_handler.lock().unwrap().currently_selected = 0;
                     } else {
-                        DH.lock().unwrap().currently_selected += 1;
+                        data_handler.lock().unwrap().currently_selected += 1;
                     }
-                    ui.set_carousel_cur_selected(DH.lock().unwrap().currently_selected as i32);
+                    ui.set_carousel_cur_selected(data_handler.lock().unwrap().currently_selected as i32);
                     update_main_view(&ui, &data_handler);
                 }         
             }
