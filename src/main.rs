@@ -56,15 +56,7 @@ fn main() -> Result<(), slint::PlatformError> {
 
     //let icon = std::include_bytes!("../recources/ExifToolIcon.png");
     //ui.set_icon_(Image::load_from_path(&PathBuf::from("./recources/ExifToolIcon.png")).unwrap());
-    initialize_exif_tiles(&ui, &ts_handle);
-    
-    //ui.set_exif_camera((standard_values::CAMERA_DEFAULT).into());
-    //ui.set_exif_lens((standard_values::LENS_DEFAULT).into());
-    //ui.set_exif_focal_length((standard_values::FOCAL_LENGTH).into());
-    //ui.set_exif_iso((standard_values::ISO_DEFAULT).into());
-    //ui.set_exif_aperture((standard_values::APERTURE_DEFAULT).into());
-    //ui.set_exif_shutter_speed((standard_values::SHUTTER_SPEED_DEFAULT).into());
-
+    //initialize_exif_tiles(&ui, &ts_handle);
 
     //------ handling callbacks ------
 
@@ -80,7 +72,8 @@ fn main() -> Result<(), slint::PlatformError> {
             data_handler.lock().unwrap().add_new_images(&mut new_images, &mut new_previews);
             data_handler.lock().unwrap().update_data_handler_tags(&tag_store);
             update_main_view(&ui, &data_handler);
-            update_carousel(&ui, &data_handler);     
+            update_carousel(&ui, &data_handler);  
+            update_exif_tiles(&ui, &data_handler, &tag_store);   
         }
     });
 
@@ -230,7 +223,6 @@ fn update_exif_tiles(ui: &AppWindow, data_handler: &Mutex<image_database::DataHa
     let mut tags = vec![];
     let mut values = vec![];
     for tag in tag_store.lock().unwrap().as_slice() {
-        println!("here");
         tags.push(tag.tag_name.clone());
     }
     let cur = data_handler.lock().unwrap().currently_selected;
@@ -243,16 +235,6 @@ fn update_exif_tiles(ui: &AppWindow, data_handler: &Mutex<image_database::DataHa
     ui.set_exif_viewport_height(2 * 120);
     ui.set_exif_tiles(type_conversion::string_to_model(tags));
     ui.set_exif_defaults(type_conversion::string_to_model(values));
-
-    //updates exif editor
-    //let cur = DH.lock().unwrap().currently_selected;
-
-    //ui.set_exif_camera((&DH.lock().unwrap().camera_names[cur]).into());
-    //ui.set_exif_lens((&DH.lock().unwrap().lens_names[cur]).into());
-    //ui.set_exif_focal_length((&DH.lock().unwrap().focal_length[cur]).into());
-    //ui.set_exif_iso((&DH.lock().unwrap().iso[cur]).into());
-    //ui.set_exif_aperture((&DH.lock().unwrap().aperture[cur]).into());
-    //ui.set_exif_shutter_speed((&DH.lock().unwrap().shutter_speed[cur]).into());
 }
 
 fn initialize_exif_tiles(ui: &AppWindow,tag_store: &Mutex<Vec<tag_store::Tag>>) {
