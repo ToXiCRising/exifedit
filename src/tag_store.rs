@@ -11,12 +11,17 @@ pub fn create_default_tag_store() -> Vec<Tag> {
     tag_store.push(Tag{
         tag_name: "Manufacturer".to_string(),
         default_value: standard_values::MANUFACTURER_DEFAULT.to_string(),
-        exif_arg: "-make=\"xxx\"".to_string(),
+        exif_arg: "-make=xxx".to_string(),
+    });
+    tag_store.push(Tag{
+        tag_name: "Model".to_string(),
+        default_value: standard_values::MODEL_DEFAULT.to_string(),
+        exif_arg: "-model=xxx".to_string(),
     });
     tag_store.push(Tag{
         tag_name: "Lens".to_string(),
-        default_value: standard_values::MODEL_DEFAULT.to_string(),
-        exif_arg: "-model=\"xxx\"".to_string(),
+        default_value: standard_values::LENS_DEFAULT.to_string(),
+        exif_arg: "-lens=xxx".to_string(),
     });
     tag_store.push(Tag{
         tag_name: "Focal Length".to_string(),
@@ -31,12 +36,12 @@ pub fn create_default_tag_store() -> Vec<Tag> {
     tag_store.push(Tag{
         tag_name: "Aperture".to_string(),
         default_value: standard_values::APERTURE_DEFAULT.to_string(),
-        exif_arg: "-aperturevalue=xxx -Fnumber=xxx".to_string(),
+        exif_arg: "-aperturevalue=xxx".to_string(), // -Fnumber=xxx
     });
     tag_store.push(Tag{
         tag_name: "Shutter Speed".to_string(),
         default_value: standard_values::SHUTTER_SPEED_DEFAULT.to_string(),
-        exif_arg: "-exposuretime=xxx".to_string(),
+        exif_arg: format!("-exposuretime={}", "xxx").to_string(),
     });
 
 

@@ -214,7 +214,7 @@ export component AppWindow inherits Window {
                         set_text: exif_defaults[i];
                         tile_id: i;
                         //wierd, handtuned offset is wierd
-                        y: (i * spacing - 300) * 1px;
+                        y: (i * spacing - 50 * exif_tiles.length) * 1px;
                     }
                 }  
             }

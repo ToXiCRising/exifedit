@@ -2,7 +2,6 @@ slint::include_modules!();
 
 mod loading_and_manipulating_data;
 mod type_conversion;
-mod data_handler;
 mod standard_values;
 mod tag_store;
 mod image_database;
@@ -11,27 +10,8 @@ use std::fs::{remove_dir, remove_file};
 use std::path::PathBuf;
 use std::process::Command;
 use std::sync::{Arc, Mutex};
-use lazy_static::lazy_static;
 use slint::{Image, SharedString, platform};
-use data_handler::DataHandler;
-
-
-
-
-lazy_static! {
-    static ref DH: Mutex<DataHandler> = Mutex::new(DataHandler{
-        currently_selected: 0,
-        image_paths: vec![],
-        preview_paths: vec![],
-
-        camera_names: vec![],
-        lens_names: vec![],
-        focal_length: vec![],
-        iso: vec![],
-        aperture: vec![],
-        shutter_speed: vec![]
-    });
-}
+use std::collections::HashMap;
 
 fn main() -> Result<(), slint::PlatformError> {
 
@@ -113,15 +93,18 @@ fn main() -> Result<(), slint::PlatformError> {
     });
 
     ui.on_writeExifData({
+        let data_handler = Arc::clone(&dh_handle);
+        let tag_store = Arc::clone(&ts_handle);
         move || {
-            if DH.lock().unwrap().image_paths.is_empty(){
+            if data_handler.lock().unwrap().images.is_empty(){
                 println!("No images loaded yet!")
             } else {
-                let num_images = DH.lock().unwrap().get_noi();
+                let num_images = data_handler.lock().unwrap().get_noi();
                 
                 for i in 0..num_images {
+                    let image_to_process = &data_handler.lock().unwrap().images[i];
                     //TODO: Handle the exit codes of exiftool!
-                    let _exit_code = call_exiftool(i);
+                    let _exit_code = call_exiftool(image_to_process, &tag_store);
                 }  
             }
         }
@@ -250,29 +233,30 @@ fn initialize_exif_tiles(ui: &AppWindow,tag_store: &Mutex<Vec<tag_store::Tag>>) 
     ui.set_exif_defaults(type_conversion::string_to_model(values));
 }
 
-fn call_exiftool(i: usize) -> i32{
+fn call_exiftool(image: &HashMap<String, String>, tag_store: &Mutex<Vec<tag_store::Tag>>) -> i32{
     
-    let (manufacturer, model) = type_conversion::split_camera_name(DH.lock().unwrap().camera_names[i].clone());
+    //let (manufacturer, model) = type_conversion::split_camera_name(DH.lock().unwrap().camera_names[i].clone());
+    println!("");
+    for tag in image.iter(){
+        println!("{:?}", tag);
+    }
+    println!("");
+
+    let mut argument: Vec<String> = vec![];
+    for tag in image.iter(){
+        if !tag.0.contains("ID") && 
+           !tag.0.contains("path") {
+            //println!("test: {:?}", tag);
+            for tag_from_store in tag_store.lock().unwrap().as_slice(){
+                if tag_from_store.tag_name.contains(tag.0) {
+                    argument.push(tag_from_store.exif_arg.replace("xxx", tag.1));
+                }
+            }
+        }
+    }
+    //println!("{:?}", argument);
     
-    println!("\nCamera: {}", DH.lock().unwrap().camera_names[i]);
-    println!("Lens: {}", DH.lock().unwrap().lens_names[i]);
-    println!("Focal Length: {}", DH.lock().unwrap().focal_length[i]);
-    println!("ISO: {}", DH.lock().unwrap().iso[i]);
-    println!("Aperture: {}", DH.lock().unwrap().aperture[i]);
-    println!("Shutter Speed: {} \n", DH.lock().unwrap().shutter_speed[i]);
-    
-    let output = Command::new("exiftool")
-                    .arg(format!("-make=\"{}\"", manufacturer))
-                    .arg(format!("-model=\"{}\"", model))
-                    .arg(format!("-lens=\"{}\"", DH.lock().unwrap().lens_names[i]))
-                    .arg(format!("-focallength={}", DH.lock().unwrap().focal_length[i]))
-                    .arg(format!("-iso={}", DH.lock().unwrap().iso[i]))
-                    .arg(format!("-aperturevalue={}", DH.lock().unwrap().aperture[i]))
-                    .arg(format!("-Fnumber={}", DH.lock().unwrap().aperture[i]))
-                    .arg(format!("-exposuretime={}", DH.lock().unwrap().shutter_speed[i]))
-                    .arg(&DH.lock().unwrap().image_paths[i])
-                    .status().expect("exiftool failed!");
-    println!("{output}\n");
+    let output = Command::new("exiftool").args(argument).arg(image["original_path"].clone()).status().expect("exiftool failed");
     return output.code().unwrap();
 }
 
