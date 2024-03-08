@@ -26,8 +26,7 @@ fn main() -> Result<(), slint::PlatformError> {
 
     let ts_handle = Arc::new(tag_store);
     let dh_handle = Arc::new(data_handler);
-    //println!("{}", arg.replace("xxx", &data_handler.lock().unwrap().images[0][tag_name]));
-   
+
 
     let ui = AppWindow::new()?;
 
@@ -48,7 +47,7 @@ fn main() -> Result<(), slint::PlatformError> {
             let ui = ui_handle.unwrap();
 
             let mut new_images = loading_and_manipulating_data::open_file_selector();
-            let mut new_previews = loading_and_manipulating_data::generate_previews(&new_images);
+            let mut new_previews = loading_and_manipulating_data::generate_preview_paths(&new_images);
             data_handler.lock().unwrap().add_new_images(&mut new_images, &mut new_previews);
             data_handler.lock().unwrap().update_data_handler_tags(&tag_store);
             update_main_view(&ui, &data_handler);
@@ -56,7 +55,6 @@ fn main() -> Result<(), slint::PlatformError> {
             update_exif_tiles(&ui, &data_handler, &tag_store);   
         }
     });
-
 
     ui.global::<Logic>().on_clickedCarouselTile({
         let ui_handle = ui.as_weak();
