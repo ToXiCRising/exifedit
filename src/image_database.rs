@@ -86,10 +86,3 @@ pub fn create_image() -> HashMap<String, String> {
 
     return image;
 }
-
-
-pub fn print_image_tags(image: &HashMap<String, String>){
-    for key in image { 
-        println!("{:?}", key);
-    }
-}

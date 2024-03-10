@@ -229,7 +229,6 @@ fn initialize_exif_tiles(ui: &AppWindow,tag_store: &Mutex<Vec<tag_store::Tag>>) 
 
 fn call_exiftool(image: &HashMap<String, String>, tag_store: &Mutex<Vec<tag_store::Tag>>) -> i32{
     
-    //let (manufacturer, model) = type_conversion::split_camera_name(DH.lock().unwrap().camera_names[i].clone());
     println!("");
     for tag in image.iter(){
         println!("{:?}", tag);
