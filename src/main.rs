@@ -10,8 +10,8 @@ use std::fs::{remove_dir, remove_file};
 use std::path::PathBuf;
 use std::process::Command;
 use std::sync::{Arc, Mutex};
-use slint::{Image, SharedString, platform};
 use std::collections::HashMap;
+use slint::{Image, SharedString, platform};
 
 fn main() -> Result<(), slint::PlatformError> {
 
@@ -31,10 +31,7 @@ fn main() -> Result<(), slint::PlatformError> {
     let ui = AppWindow::new()?;
 
     //------ setting up icons and standard values ------
-    //TODO: emmbed the png into the exe, the program cant find it otherwise 
-
-    //let icon = std::include_bytes!("../recources/ExifToolIcon.png");
-    //ui.set_icon_(Image::load_from_path(&PathBuf::from("./recources/ExifToolIcon.png")).unwrap());
+    ui.set_icon_(loading_and_manipulating_data::load_slint_icon());
     //initialize_exif_tiles(&ui, &ts_handle);
 
     //------ handling callbacks ------

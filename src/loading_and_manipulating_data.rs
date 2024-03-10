@@ -5,6 +5,7 @@ use std::thread;
 use native_dialog::FileDialog;
 use image;
 use image::GenericImageView;
+use slint::{Image, SharedPixelBuffer, Rgba8Pixel};
 
 use crate::standard_values;
 
@@ -27,8 +28,19 @@ pub fn open_file_selector() -> Vec<PathBuf> {
     return paths;
 }
 
-pub fn generate_previews(original_image_paths: &Vec<PathBuf>) -> Vec<PathBuf>{
-    //TODO: Multithread that sucker?
+pub fn load_slint_icon() -> Image {
+    let icon = std::include_bytes!("../recources/ExifToolIcon.png");
+    let icon_buf = image::load_from_memory(icon).unwrap().into_rgba8();
+    
+    let buf = SharedPixelBuffer::<Rgba8Pixel>::clone_from_slice(
+        icon_buf.as_raw(),
+        icon_buf.width(),
+        icon_buf.height(),
+    );
+    return Image::from_rgba8(buf);
+}
+
+fn _generate_previews(original_image_paths: &Vec<PathBuf>) -> Vec<PathBuf>{
     
     println!("\nGenerating Previews!");
 
