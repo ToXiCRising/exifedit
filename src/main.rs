@@ -27,7 +27,6 @@ fn main() -> Result<(), slint::PlatformError> {
     let ts_handle = Arc::new(tag_store);
     let dh_handle = Arc::new(data_handler);
 
-
     let ui = AppWindow::new()?;
 
     //------ setting up icons and standard values ------

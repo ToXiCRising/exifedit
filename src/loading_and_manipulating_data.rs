@@ -29,7 +29,7 @@ pub fn open_file_selector() -> Vec<PathBuf> {
 }
 
 pub fn load_slint_icon() -> Image {
-    let icon = std::include_bytes!("../recources/ExifToolIcon.png");
+    let icon = std::include_bytes!("../resources/ExifToolIcon.png");
     let icon_buf = image::load_from_memory(icon).unwrap().into_rgba8();
     
     let buf = SharedPixelBuffer::<Rgba8Pixel>::clone_from_slice(

@@ -43,7 +43,7 @@ impl DataHandler {
     }
 
     pub fn remove_image(id: String) {
-        //TODO
+        //TODO implement removal of images
         todo!("Implement this sucker")
     }
 
