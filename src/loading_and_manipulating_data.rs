@@ -12,6 +12,7 @@ use crate::standard_values;
 pub fn open_file_selector() -> Vec<PathBuf> {
     let paths = FileDialog::new()
     .set_location("~/Desktop")
+    .add_filter("Image", &["jpg", "jpeg", "png"])
     .add_filter("JPEG Image", &["jpg", "jpeg"])
     .add_filter("PNG Image", &["png"])
     .show_open_multiple_file()
@@ -20,7 +21,7 @@ pub fn open_file_selector() -> Vec<PathBuf> {
     });
     
 
-    println!("Selected files:");
+    println!("INFO: Selected files:");
     for path in paths.iter(){
         println!("\t- {}", path.display());
     }
@@ -42,7 +43,7 @@ pub fn load_slint_icon() -> Image {
 
 fn _generate_previews(original_image_paths: &Vec<PathBuf>) -> Vec<PathBuf>{
     
-    println!("\nGenerating Previews!");
+    println!("\nINFO: Generating Previews!");
 
     let mut preview_image_paths: Vec<PathBuf> = vec![];
     //let preview_dir = "exif_previews";
@@ -70,7 +71,7 @@ fn _generate_previews(original_image_paths: &Vec<PathBuf>) -> Vec<PathBuf>{
 
 pub fn generate_preview_paths(original_image_paths: &Vec<PathBuf>) -> Vec<PathBuf> {
 
-    println!("\nGenerating Previews!");
+    println!("\nINFO: Generating Previews!");
 
     let mut preview_image_paths: Vec<PathBuf> = vec![];
     //let preview_dir = "exif_previews";
@@ -108,7 +109,7 @@ fn gp_mt(original_image_paths: &Vec<PathBuf>, preview_image_paths: &Vec<PathBuf>
             //println!("\toriginal dimensions: {:?}", img.dimensions());
             let img_smol = img.resize(512, 512, image::imageops::Nearest);
             img_smol.save(&pip_handle.lock().unwrap()[i]).unwrap();
-            println!("\tgenerated preview file at: {:?}", p);
+            println!("\t- generated preview file at: {:?}", p);
         });
         handles.push(handle);
     }

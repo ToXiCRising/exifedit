@@ -91,7 +91,7 @@ fn main() -> Result<(), slint::PlatformError> {
         let tag_store = Arc::clone(&ts_handle);
         move || {
             if data_handler.lock().unwrap().images.is_empty(){
-                println!("No images loaded yet!")
+                println!("WARNING: No images loaded yet!")
             } else {
                 let num_images = data_handler.lock().unwrap().get_noi();
                 
@@ -153,7 +153,7 @@ fn main() -> Result<(), slint::PlatformError> {
     ui.window().on_close_requested({
         let data_handler = Arc::clone(&dh_handle);
         move || {
-            println!("\nCleaning up!");
+            println!("\nINFO: Cleaning up!");
             let previews = data_handler.lock().unwrap().get_preview_paths();
             for preview in previews {
                 let _res_file = remove_file(preview);
